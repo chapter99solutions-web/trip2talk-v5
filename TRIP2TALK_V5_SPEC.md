@@ -1,75 +1,26 @@
-# Trip2Talk V5 — Product & Technical Spec
+# Trip2Talk V5 — Implementation Reference
 
-Chapter 99 Photography · Private Photo Journey PWA · **Next.js 14** (App Router) + TypeScript + Tailwind.
+See [README.md](./README.md) for setup. This file mirrors the product spec.
 
-## Stack
+## Real tour codes (only these 8)
 
-| Layer | Choice |
-|-------|--------|
-| Framework | Next.js 14.2, App Router, **no `src/` directory** |
-| Styling | Tailwind CSS 3.4, brand tokens (`navy`, `gold`, `teal`, `sage`) |
-| Data (trips/bookings) | Google Apps Script Web App → Sheets (`Trips_Data`, `Customer_Bookings`, `Consents`) |
-| Data (ops/CRM) | Supabase (optional; env-driven) |
-| Deploy | Vercel |
+`TAS-3D2N` · `MEL-4D3N` · `ULU-4D3N` · `NZ-6D5N` · `TAS-LH-4D3N` · `KIA-1DAY` · `CAN-2D1N` · `SYD-1DAY`
 
-## Vocabulary (UI copy)
+## Data
 
-- Thai: **ทริป** — not **ทัวร์**
-- English: **trip** — not **tour** (customer-facing)
-- **Do not rename:** DB `tours`, `tour_bookings`; URLs `/tours/:tourId` (SEO)
+- **Primary:** Supabase `trips` / `bookings` / `expenses`
+- **Enrichment:** GAS `doGet` → Sheet tab `Trip info` (`NEXT_PUBLIC_GAS_URL`)
+- **Seats:** `claim_seats` / `release_seats` RPC only (never client-side seat math for writes)
 
-## Business rules — trip size tiers
+## Dashboard PINs
 
-| Tier | Guests | Pricing |
-|------|--------|---------|
-| Tier 1 Standard | 4–6 | List price per person |
-| Tier 2 Private | 1–3 | Premium (`PRIVATE_PRICE_MULTIPLIER` = 1.3) |
+| PIN | Role |
+|-----|------|
+| 1111 | Staff — bookings, check-in |
+| 4444 | Co-host — walk-in ±1 seat via RPC |
+| 9999 | Owner — revenue, expenses, P&L |
+| 3501 | Platform — trip CRUD, raw bookings |
 
-Solo traveller (1) = Tier 2 Private. Source: `lib/bookingPolicy.ts`.
+## Assets
 
-## Other product rules
-
-- Positioning: **Private Photo Journey** (not mass-market tour operator)
-- Album: **.JPG only**, signed link **60 days** (not 90)
-- Owner cancel &lt;45 days before departure → **100% refund**
-
-## Routes (parity with V4)
-
-| Path | Purpose |
-|------|---------|
-| `/` | Public portfolio / trip grid |
-| `/trips` | Alias → home |
-| `/tours/:tourId` | Trip detail |
-| `/book/:tourId` | Booking checkout |
-| `/portal` | Client portal login |
-| `/trip/:bookingRef`, `/pass/:bookingId` | VIP hub / waivers |
-| `/about`, `/contact`, `/calendar`, `/saved` | Marketing & utilities |
-| `/terms`, `/package-terms` | Legal |
-| `/album/:tourId`, `/album-prep` | Album prep |
-| `/ops` | Staff PIN gate |
-| `/dashboard/staff|cohost|owner|platform` | Role dashboards |
-| `/cms` | Owner/platform CMS |
-
-## API routes (Next.js Route Handlers)
-
-| Route | Method | GAS action |
-|-------|--------|------------|
-| `/api/booking/create` | POST | `createBooking` |
-| `/api/booking/status` | GET | `getBookingStatus` |
-| `/api/booking/intake` | POST | `updateIntake` |
-
-## Environment
-
-| Variable | Scope |
-|----------|--------|
-| `GAS_WEBAPP_URL` | Server — Apps Script `/exec` |
-| `NEXT_PUBLIC_GAS_WEBAPP_URL` | Optional client fallback |
-| `NEXT_PUBLIC_SITE_URL` | Canonical site origin |
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase client |
-
-## Dev
-
-```bash
-npm run dev    # next dev (webpack, not turbopack)
-npm run build
-```
+`https://niuibpznjvytprbrzvnn.supabase.co/storage/v1/object/public/portfolio/[path]`
