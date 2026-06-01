@@ -1,6 +1,6 @@
 import { gasGetTrips } from './gas-client';
 import { isRealTourCode, portfolioImageUrl, REAL_TOUR_CODES } from './constants';
-import { applyCanonicalTrip, getCanonicalSeed } from './trip-canonical';
+import { applyCanonicalTrip, getCanonicalSeed, guardAllowedTrips } from './trip-canonical';
 import { SEED_TRIPS, withIds } from './seed-trips';
 import { getSupabaseSafe, type TripRow } from './supabase';
 
@@ -15,6 +15,29 @@ function pickField(row: Record<string, unknown>, keys: string[]): unknown {
     if (row[k] != null && row[k] !== '') return row[k];
   }
   return undefined;
+}
+
+/** Resolve tour_code from sheet row — never trust marketing title as the code. */
+function extractTourCodeFromRow(row: Record<string, unknown>): string | null {
+  const fields = [
+    row.tour_code,
+    row['Tour Code'],
+    row.tourCode,
+    row.TourCode,
+    row.code,
+    row['Code'],
+  ];
+  for (const field of fields) {
+    const code = normalizeCode(field);
+    if (isRealTourCode(code)) return code;
+  }
+  const blob = String(
+    pickField(row, ['Tour Name', 'tourName', 'name', 'title', 'Tour Title']) ?? ''
+  ).toUpperCase();
+  for (const code of REAL_TOUR_CODES) {
+    if (blob.includes(code)) return code;
+  }
+  return null;
 }
 
 function operationalFromGasRow(row: Record<string, unknown>, seed: TripRow): Partial<TripRow> {
@@ -50,13 +73,16 @@ function operationalFromGasRow(row: Record<string, unknown>, seed: TripRow): Par
 }
 
 function gasRowToTrip(row: Record<string, unknown>): TripRow | null {
-  const tour_code = normalizeCode(
-    pickField(row, ['tour_code', 'Tour Code', 'tourCode', 'TourCode', 'code'])
-  );
-  if (!isRealTourCode(tour_code)) return null;
+  const tour_code = extractTourCodeFromRow(row);
+  if (!tour_code) return null;
   const seed = getCanonicalSeed(tour_code);
   if (!seed) return null;
   return applyCanonicalTrip(tour_code, operationalFromGasRow(row, seed));
+}
+
+function filterGasRows(rows: Record<string, unknown>[] | null): Record<string, unknown>[] | null {
+  if (!rows) return null;
+  return rows.filter((row) => extractTourCodeFromRow(row) != null);
 }
 
 async function fetchTripsFromSupabase(): Promise<TripRow[] | null> {
@@ -102,21 +128,28 @@ function mergeTrips(supabaseRows: TripRow[] | null, gasRows: Record<string, unkn
     for (const row of gasRows) {
       const merged = gasRowToTrip(row);
       if (!merged) continue;
-      const existing = byCode.get(merged.tour_code)!;
-      byCode.set(merged.tour_code, applyCanonicalTrip(merged.tour_code, { ...existing, ...merged }));
+      byCode.set(
+        merged.tour_code,
+        applyCanonicalTrip(merged.tour_code, {
+          date: merged.date,
+          price: merged.price,
+          max_seats: merged.max_seats,
+          seats_taken: merged.seats_taken,
+          duration: merged.duration,
+          season: merged.season,
+          cover_image: merged.cover_image,
+        })
+      );
     }
   }
 
-  return REAL_TOUR_CODES.map((code) => byCode.get(code)!);
+  return guardAllowedTrips(REAL_TOUR_CODES.map((code) => byCode.get(code)!));
 }
 
 export async function loadTrips(): Promise<TripRow[]> {
-  const gasRows = await gasGetTrips();
+  const gasRows = filterGasRows(await gasGetTrips());
   if (gasRows && gasRows.length > 0) {
-    const trips = mergeTrips(null, gasRows);
-    if (trips.length === REAL_TOUR_CODES.length) {
-      return trips;
-    }
+    return mergeTrips(null, gasRows);
   }
 
   const supabaseRows = await fetchTripsFromSupabase();
@@ -124,7 +157,7 @@ export async function loadTrips(): Promise<TripRow[]> {
     return mergeTrips(supabaseRows, gasRows);
   }
 
-  return REAL_TOUR_CODES.map((code) => getCanonicalSeed(code)!);
+  return guardAllowedTrips(REAL_TOUR_CODES.map((code) => getCanonicalSeed(code)!));
 }
 
 export async function loadTripByCode(tourCode: string): Promise<TripRow | null> {

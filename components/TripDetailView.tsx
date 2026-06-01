@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { TripRow } from '@/lib/supabase';
 import { isMultiDayTrip } from '@/lib/constants';
+import { tripDisplayTitle } from '@/lib/trip-display';
 import { seatsRemaining, tripBookable } from '@/lib/trips';
 import { useI18n } from '@/lib/i18n';
 import BookingForm from './BookingForm';
@@ -17,7 +18,7 @@ const EXCLUDES = ['Flights', 'Travel insurance', 'Personal expenses', 'Meals unl
 
 export default function TripDetailView({ trip }: { trip: TripRow }) {
   const { t, lang } = useI18n();
-  const title = lang === 'TH' && trip.name_th ? trip.name_th : trip.name;
+  const title = tripDisplayTitle(trip, lang);
   const remaining = seatsRemaining(trip);
   const { reason } = tripBookable(trip);
   const multiDay = isMultiDayTrip(trip.duration);

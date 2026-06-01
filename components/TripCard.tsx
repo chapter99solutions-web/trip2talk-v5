@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { TripRow } from '@/lib/supabase';
 import { FLAGSHIP_TOUR_CODE } from '@/lib/constants';
+import { tripDisplayTitle } from '@/lib/trip-display';
 import { seatsRemaining, tripBookable } from '@/lib/trips';
 import { useI18n } from '@/lib/i18n';
 
@@ -10,7 +11,7 @@ export default function TripCard({ trip }: { trip: TripRow }) {
   const { t, lang } = useI18n();
   const remaining = seatsRemaining(trip);
   const { bookable, reason } = tripBookable(trip);
-  const title = lang === 'TH' && trip.name_th ? trip.name_th : trip.name;
+  const title = tripDisplayTitle(trip, lang);
   const isFlagship = trip.tour_code === FLAGSHIP_TOUR_CODE || trip.featured;
 
   return (

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { TripRow } from '@/lib/supabase';
+import { tripDisplayTitle } from '@/lib/trip-display';
 import { useI18n } from '@/lib/i18n';
 
 export default function BookingConfirmation({
@@ -14,7 +15,7 @@ export default function BookingConfirmation({
   seats: number;
 }) {
   const { t, lang } = useI18n();
-  const title = lang === 'TH' && trip.name_th ? trip.name_th : trip.name;
+  const title = tripDisplayTitle(trip, lang);
   const total = trip.price * seats;
 
   function addToCalendar() {
@@ -22,7 +23,7 @@ export default function BookingConfirmation({
     const start = trip.date.replace(/-/g, '');
     const end = start;
     const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-      `Trip2Talk: ${trip.name}`
+      `Trip2Talk: ${title}`
     )}&dates=${start}/${end}&details=${encodeURIComponent(`Ref: ${bookingRef}`)}`;
     window.open(url, '_blank');
   }

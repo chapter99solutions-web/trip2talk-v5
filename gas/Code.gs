@@ -14,14 +14,15 @@ var ALLOWED_TOUR_CODES = {
   'SYD-1DAY': true,
 };
 
-var REJECTED_NAME_MARKERS = [
-  'alpine kingdom',
-  'secret southern coast',
-  'the aurora edge',
+var REJECTED_NAME_SNIPPETS = [
+  'alpine',
+  'southern coast',
   'aurora edge',
   'lavender',
-  'the coastal cliffs',
-  'the golden fields',
+  'aurora trail',
+  'coastal cliffs',
+  'golden fields',
+  'secret southern',
 ];
 
 function normalizeCode(raw) {
@@ -30,21 +31,32 @@ function normalizeCode(raw) {
     .toUpperCase();
 }
 
-function rowTourCode(obj) {
-  return normalizeCode(
-    obj['Tour Code'] || obj.tour_code || obj.tourCode || obj.TourCode || obj.code
-  );
-}
-
-function rowTourName(obj) {
-  return String(obj['Tour Name'] || obj.tourName || obj.name || obj.title || '').toLowerCase();
-}
-
 function isRejectedName(nameLower) {
-  for (var i = 0; i < REJECTED_NAME_MARKERS.length; i++) {
-    if (nameLower.indexOf(REJECTED_NAME_MARKERS[i]) !== -1) return true;
+  for (var i = 0; i < REJECTED_NAME_SNIPPETS.length; i++) {
+    if (nameLower.indexOf(REJECTED_NAME_SNIPPETS[i]) !== -1) return true;
   }
   return false;
+}
+
+function extractTourCodeFromRow(obj) {
+  var fields = [
+    obj['Tour Code'],
+    obj.tour_code,
+    obj.tourCode,
+    obj.TourCode,
+    obj.code,
+    obj['Code'],
+  ];
+  for (var i = 0; i < fields.length; i++) {
+    var code = normalizeCode(fields[i]);
+    if (ALLOWED_TOUR_CODES[code]) return code;
+  }
+  var blob = String(obj['Tour Name'] || obj.tourName || obj.name || obj.title || '').toUpperCase();
+  var keys = Object.keys(ALLOWED_TOUR_CODES);
+  for (var j = 0; j < keys.length; j++) {
+    if (blob.indexOf(keys[j]) !== -1) return keys[j];
+  }
+  return '';
 }
 
 function getSpreadsheet_() {
@@ -82,9 +94,14 @@ function readTripsFromSheet_() {
       return obj;
     })
     .filter(function (obj) {
-      var code = rowTourCode(obj);
-      if (!ALLOWED_TOUR_CODES[code]) return false;
-      if (isRejectedName(rowTourName(obj))) return false;
+      var code = extractTourCodeFromRow(obj);
+      if (!code) return false;
+      obj['Tour Code'] = code;
+      obj.tour_code = code;
+      var nameLower = String(obj['Tour Name'] || obj.tourName || obj.name || '').toLowerCase();
+      if (isRejectedName(nameLower)) {
+        return false;
+      }
       return true;
     });
 }
@@ -94,7 +111,7 @@ function getTripsResponse_() {
   return respond({
     ok: true,
     action: 'getTrips',
-    version: '1.1',
+    version: '1.2',
     trips: trips,
     read: { tab: TRIPS_TAB, tripCount: trips.length },
   });
