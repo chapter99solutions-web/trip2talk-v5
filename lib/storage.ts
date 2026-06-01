@@ -8,6 +8,26 @@ function publicUrl(folder: string, name: string): string {
   return `${STORAGE_PUBLIC_BASE}/${encodeURI(path)}`;
 }
 
+/** Homepage hero — user-specified fallbacks when storage.list fails. */
+const HERO_FALLBACK_URLS = [
+  portfolioImageUrl('milkyway/1.jpg'),
+  portfolioImageUrl('Uluru/1.jpg'),
+  portfolioImageUrl('New Zealand/Spring/T2T-10.JPG'),
+];
+
+async function listMixedCoverFlat(): Promise<string[]> {
+  const sb = getSupabaseSafe();
+  if (!sb) return [];
+  const { data, error } = await sb.storage.from('portfolio').list('Mixed Cover', {
+    limit: 50,
+    sortBy: { column: 'name', order: 'asc' },
+  });
+  if (error || !data?.length) return [];
+  return data
+    .filter((item) => item.id != null && item.name && /\.(jpe?g|png|webp|gif)$/i.test(item.name))
+    .map((item) => publicUrl('Mixed Cover', item.name));
+}
+
 async function listFolder(folder: string): Promise<StorageImage[]> {
   const sb = getSupabaseSafe();
   if (!sb) return [];
@@ -30,22 +50,10 @@ async function listFolder(folder: string): Promise<StorageImage[]> {
   return images;
 }
 
-const HERO_FALLBACK = [
-  'Cover/Mixed/01.jpg',
-  'Cover/Mixed/02.jpg',
-  'Cover/Mixed/03.jpg',
-  'Cover/Mixed/04.jpg',
-  'Cover/Mixed/05.png',
-  'Cover/Mixed/06.jpg',
-  'Cover/Mixed/07.jpg',
-].map(portfolioImageUrl);
-
 export async function listHeroSlides(): Promise<string[]> {
-  for (const folder of ['Mixed Cover', 'Cover/Mixed', 'Cover']) {
-    const mixed = await listFolder(folder);
-    if (mixed.length) return mixed.map((i) => i.url);
-  }
-  return HERO_FALLBACK;
+  const mixed = await listMixedCoverFlat();
+  if (mixed.length) return mixed;
+  return HERO_FALLBACK_URLS;
 }
 
 export async function listGalleryImages(tabId: string): Promise<StorageImage[]> {

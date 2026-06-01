@@ -42,6 +42,7 @@ export function applyCanonicalTrip(
     name: seed.name,
     name_th: seed.name_th,
     description: seed.description,
+    featured: seed.featured,
   };
 }
 

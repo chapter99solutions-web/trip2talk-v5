@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from './env';
 
 export type TripRow = {
   id: string;
@@ -13,6 +14,7 @@ export type TripRow = {
   description: string | null;
   duration: string;
   season: string | null;
+  featured?: boolean;
   created_at?: string;
 };
 
@@ -44,12 +46,10 @@ export type ClaimSeatsResult = {
 
 let client: SupabaseClient | null = null;
 
-export function getSupabase(): SupabaseClient {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
-  if (!url || !key) {
-    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
-  }
+export function getSupabase(): SupabaseClient | null {
+  if (!isSupabaseConfigured()) return null;
+  const url = getSupabaseUrl();
+  const key = getSupabaseAnonKey()!;
   if (!client) {
     client = createClient(url, key);
   }
@@ -57,9 +57,5 @@ export function getSupabase(): SupabaseClient {
 }
 
 export function getSupabaseSafe(): SupabaseClient | null {
-  try {
-    return getSupabase();
-  } catch {
-    return null;
-  }
+  return getSupabase();
 }

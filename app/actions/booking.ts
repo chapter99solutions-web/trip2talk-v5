@@ -41,8 +41,9 @@ export async function adjustSeats(tourCode: string, delta: number) {
 }
 
 export async function markCheckedIn(bookingRef: string) {
-  const { getSupabase } = await import('@/lib/supabase');
-  const sb = getSupabase();
+  const { getSupabaseSafe } = await import('@/lib/supabase');
+  const sb = getSupabaseSafe();
+  if (!sb) return;
   const { error } = await sb
     .from('bookings')
     .update({ status: 'checked_in' })

@@ -7,8 +7,23 @@ import HeroSlideshow from './HeroSlideshow';
 import TripCard from './TripCard';
 import LangToggle from './LangToggle';
 
+const STATS = [
+  {
+    labelEn: '8 Curated Trips',
+    labelTh: '8 ทริปคัดสรร',
+  },
+  {
+    labelEn: 'Small Group Max 6',
+    labelTh: 'Small Group Max 6',
+  },
+  {
+    labelEn: 'Led by พี่แสน',
+    labelTh: 'Led by พี่แสน',
+  },
+] as const;
+
 export default function HomePage({ trips, slides }: { trips: TripRow[]; slides: string[] }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   return (
     <div className="min-h-screen bg-white">
@@ -28,6 +43,18 @@ export default function HomePage({ trips, slides }: { trips: TripRow[]; slides: 
               'ทริปถ่ายภาพส่วนตัว — กลุ่มเล็ก แสงจริง เรื่องราวของคุณ'
             )}
           </p>
+        </div>
+      </section>
+
+      <section className="border-b border-slate-100 bg-slate-50">
+        <div className="max-w-4xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+          {STATS.map((stat) => (
+            <div key={stat.labelEn}>
+              <p className="font-serif text-xl md:text-2xl text-navy font-semibold">
+                {lang === 'TH' ? stat.labelTh : stat.labelEn}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 

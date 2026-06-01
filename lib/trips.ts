@@ -1,3 +1,4 @@
+import { getGasUrl } from './env';
 import { isRealTourCode, portfolioImageUrl, REAL_TOUR_CODES } from './constants';
 import { applyCanonicalTrip, getCanonicalSeed } from './trip-canonical';
 import { SEED_TRIPS, withIds } from './seed-trips';
@@ -59,7 +60,7 @@ function gasRowToTrip(row: Record<string, unknown>): TripRow | null {
 }
 
 async function fetchTripsFromGas(): Promise<Record<string, unknown>[] | null> {
-  const gasUrl = process.env.NEXT_PUBLIC_GAS_URL?.trim();
+  const gasUrl = getGasUrl();
   if (!gasUrl) return null;
   try {
     const res = await fetch(gasUrl, { cache: 'no-store' });

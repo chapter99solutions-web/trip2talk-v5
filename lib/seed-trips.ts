@@ -1,5 +1,5 @@
 import type { TripRow } from './supabase';
-import { portfolioImageUrl } from './constants';
+import { FLAGSHIP_TOUR_CODE, portfolioImageUrl } from './constants';
 
 /** Canonical seed — only these 8 tour_codes may appear in the UI. */
 export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
@@ -38,18 +38,19 @@ export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
     max_seats: 5,
     seats_taken: 0,
     cover_image: portfolioImageUrl('Uluru/1.jpg'),
-    description: 'Uluru sunrise, Field of Light, and Kata Tjuta.',
+    description: 'Red Desert Odyssey 4D3N private photo journey.',
     duration: '4D3N',
     season: 'All Year',
   },
   {
-    tour_code: 'NZ-6D5N',
+    tour_code: FLAGSHIP_TOUR_CODE,
     name: 'New Zealand South Island 6D5N',
     name_th: 'นิวซีแลนด์ 6 วัน 5 คืน',
     date: null,
     price: 2350,
     max_seats: 5,
     seats_taken: 0,
+    featured: true,
     cover_image: portfolioImageUrl('New Zealand/Spring/T2T-10.JPG'),
     description: 'New Zealand South Island 6D5N private photo journey.',
     duration: '6D5N',
@@ -64,7 +65,7 @@ export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
     max_seats: 6,
     seats_taken: 0,
     cover_image: portfolioImageUrl('Tasmania/596371362_1428639202594510_8709278754225773992_n.jpg'),
-    description: 'Launceston to Hobart summer highlands route.',
+    description: 'The Launceston Highland 4D3N private photo journey.',
     duration: '4D3N',
     season: 'Winter',
   },
@@ -77,7 +78,7 @@ export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
     max_seats: 8,
     seats_taken: 0,
     cover_image: portfolioImageUrl('SYD/705320467_10242162489108855_3820285517745745334_n.jpg'),
-    description: 'Kiama 1 day private photo journey.',
+    description: 'Kiama 1 Day private photo journey.',
     duration: '1DAY',
     season: 'All Year',
   },
@@ -90,7 +91,7 @@ export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
     max_seats: 6,
     seats_taken: 0,
     cover_image: portfolioImageUrl('Cowra/12 (1).jpg'),
-    description: 'Golden canola fields and capital region landscapes.',
+    description: 'Canberra 2D1N private photo journey.',
     duration: '2D1N',
     season: 'All Year',
   },
@@ -103,7 +104,7 @@ export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
     max_seats: 10,
     seats_taken: 0,
     cover_image: portfolioImageUrl('SYDNEY/506861557_10236863821565478_6038697174671264606_n.jpg'),
-    description: 'Iconic harbour and urban photo walk.',
+    description: 'Sydney 1 Day private photo journey.',
     duration: '1DAY',
     season: 'All Year',
   },
@@ -115,4 +116,12 @@ export function withIds(trips: Omit<TripRow, 'id' | 'created_at'>[]): TripRow[] 
     id: `seed-${t.tour_code}-${i}`,
     created_at: new Date().toISOString(),
   }));
+}
+
+export function sortTripsForDisplay(trips: TripRow[]): TripRow[] {
+  return [...trips].sort((a, b) => {
+    if (a.tour_code === FLAGSHIP_TOUR_CODE) return -1;
+    if (b.tour_code === FLAGSHIP_TOUR_CODE) return 1;
+    return 0;
+  });
 }

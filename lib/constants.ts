@@ -2,11 +2,13 @@ export const SUPABASE_PROJECT = 'niuibpznjvytprbrzvnn';
 
 export const STORAGE_PUBLIC_BASE = `https://${SUPABASE_PROJECT}.supabase.co/storage/v1/object/public/portfolio`;
 
+export const FLAGSHIP_TOUR_CODE = 'NZ-6D5N' as const;
+
 export const REAL_TOUR_CODES = [
   'TAS-3D2N',
   'MEL-4D3N',
   'ULU-4D3N',
-  'NZ-6D5N',
+  FLAGSHIP_TOUR_CODE,
   'TAS-LH-4D3N',
   'KIA-1DAY',
   'CAN-2D1N',

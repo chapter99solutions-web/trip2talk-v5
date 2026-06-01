@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { TripRow } from '@/lib/supabase';
+import { FLAGSHIP_TOUR_CODE } from '@/lib/constants';
 import { seatsRemaining, tripBookable } from '@/lib/trips';
 import { useI18n } from '@/lib/i18n';
 
@@ -10,9 +11,14 @@ export default function TripCard({ trip }: { trip: TripRow }) {
   const remaining = seatsRemaining(trip);
   const { bookable, reason } = tripBookable(trip);
   const title = lang === 'TH' && trip.name_th ? trip.name_th : trip.name;
+  const isFlagship = trip.tour_code === FLAGSHIP_TOUR_CODE || trip.featured;
 
   return (
-    <article className="group rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-lg transition-shadow">
+    <article
+      className={`group rounded-2xl overflow-hidden border bg-white shadow-sm hover:shadow-lg transition-shadow ${
+        isFlagship ? 'border-gold ring-1 ring-gold/40' : 'border-slate-200'
+      }`}
+    >
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
         {trip.cover_image ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -22,6 +28,11 @@ export default function TripCard({ trip }: { trip: TripRow }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : null}
+        {isFlagship && (
+          <span className="absolute top-3 left-3 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-navy">
+            {t('Flagship', 'ทริปไฮไลท์')}
+          </span>
+        )}
         {reason === 'full' && (
           <span className="absolute top-3 right-3 rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white">
             {t('Full', 'เต็มแล้ว')}

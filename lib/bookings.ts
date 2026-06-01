@@ -1,4 +1,4 @@
-import { getSupabase, type ClaimSeatsResult } from './supabase';
+import { getSupabaseSafe, type ClaimSeatsResult } from './supabase';
 
 export function generateBookingRef(): string {
   const part = Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -6,7 +6,8 @@ export function generateBookingRef(): string {
 }
 
 export async function claimSeats(tourCode: string, seats: number): Promise<ClaimSeatsResult> {
-  const sb = getSupabase();
+  const sb = getSupabaseSafe();
+  if (!sb) return { ok: false, reason: 'booking unavailable' };
   const { data, error } = await sb.rpc('claim_seats', {
     p_tour_code: tourCode.toUpperCase(),
     p_seats: seats,
@@ -18,7 +19,8 @@ export async function claimSeats(tourCode: string, seats: number): Promise<Claim
 }
 
 export async function releaseSeats(tourCode: string, seats: number): Promise<ClaimSeatsResult> {
-  const sb = getSupabase();
+  const sb = getSupabaseSafe();
+  if (!sb) return { ok: false, reason: 'booking unavailable' };
   const { data, error } = await sb.rpc('release_seats', {
     p_tour_code: tourCode.toUpperCase(),
     p_seats: seats,
@@ -37,16 +39,21 @@ export type CreateBookingInput = {
 };
 
 export async function createBooking(input: CreateBookingInput) {
-  const sb = getSupabase();
-  const { data, error } = await sb.from('bookings').insert({
-    tour_code: input.tour_code.toUpperCase(),
-    booking_ref: input.booking_ref,
-    name: input.name,
-    email: input.email,
-    phone: input.phone ?? null,
-    seats: input.seats,
-    status: 'confirmed',
-  }).select().single();
+  const sb = getSupabaseSafe();
+  if (!sb) throw new Error('Booking service is not available right now.');
+  const { data, error } = await sb
+    .from('bookings')
+    .insert({
+      tour_code: input.tour_code.toUpperCase(),
+      booking_ref: input.booking_ref,
+      name: input.name,
+      email: input.email,
+      phone: input.phone ?? null,
+      seats: input.seats,
+      status: 'confirmed',
+    })
+    .select()
+    .single();
   if (error) throw new Error(error.message);
   return data;
 }
