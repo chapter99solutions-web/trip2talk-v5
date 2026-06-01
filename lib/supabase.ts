@@ -57,7 +57,7 @@ export function getSupabase(): SupabaseClient | null {
   return client;
 }
 
-/** Client for portfolio storage (may be a different Supabase project). */
+/** Client for portfolio storage (niuibpznjvytprbrzvnn — not the DB project). */
 export function getStorageSupabase(): SupabaseClient | null {
   if (!isSupabaseConfigured()) return null;
   const url = getStorageSupabaseUrl();

@@ -1,16 +1,17 @@
-import { portfolioImageUrl, STORAGE_PUBLIC_BASE } from './constants';
+import { getStoragePublicBase } from './env';
+import { portfolioImageUrl } from './constants';
 import { getStorageSupabase } from './supabase';
 
 export type StorageImage = { name: string; url: string; folder: string };
 
 function publicUrl(folder: string, name: string): string {
   const path = folder ? `${folder}/${name}` : name;
-  return `${STORAGE_PUBLIC_BASE}/${encodeURI(path)}`;
+  return `${getStoragePublicBase()}/${encodeURI(path)}`;
 }
 
-/** Homepage hero — user-specified fallbacks when storage.list fails. */
+/** Homepage hero — Mixed Cover on original storage; fallbacks if list fails. */
 const HERO_FALLBACK_URLS = [
-  portfolioImageUrl('milkyway/1.jpg'),
+  portfolioImageUrl('Mixed Cover/1.jpg'),
   portfolioImageUrl('Uluru/1.jpg'),
   portfolioImageUrl('New Zealand/Spring/T2T-10.JPG'),
 ];

@@ -1,10 +1,4 @@
-/** Supabase project for DB / RPC (from env; fallback legacy). */
-export const SUPABASE_PROJECT = 'niuibpznjvytprbrzvnn';
-
-/** Supabase project hosting the public `portfolio` storage bucket. */
-export const STORAGE_SUPABASE_PROJECT = 'pcqxewzzypwxfldxkcxp';
-
-export const STORAGE_PUBLIC_BASE = `https://${STORAGE_SUPABASE_PROJECT}.supabase.co/storage/v1/object/public/portfolio`;
+import { getStoragePublicBase } from './env';
 
 export const FLAGSHIP_TOUR_CODE = 'NZ-6D5N' as const;
 
@@ -35,13 +29,13 @@ export const GALLERY_TABS = [
     id: 'all',
     labelEn: 'All',
     labelTh: 'ทั้งหมด',
-    folders: ['Melbourne', 'Tasmania', 'Ulruru', 'Uluru', 'New Zealand', 'Sydney', 'SYD', 'SYDNEY', 'Cowra', 'Mixed Cover'],
+    folders: ['Melbourne', 'Tasmania', 'Uluru', 'New Zealand', 'SYDNEY'],
   },
   { id: 'melbourne', labelEn: 'Melbourne', labelTh: 'เมลเบิร์น', folders: ['Melbourne'] },
   { id: 'tasmania', labelEn: 'Tasmania', labelTh: 'แทสเมเนีย', folders: ['Tasmania'] },
-  { id: 'uluru', labelEn: 'Uluru', labelTh: 'อูลูรู', folders: ['Ulruru', 'Uluru'] },
+  { id: 'uluru', labelEn: 'Uluru', labelTh: 'อูลูรู', folders: ['Uluru'] },
   { id: 'nz', labelEn: 'New Zealand', labelTh: 'นิวซีแลนด์', folders: ['New Zealand'] },
-  { id: 'sydney', labelEn: 'Sydney', labelTh: 'ซิดนีย์', folders: ['Sydney', 'SYD', 'SYDNEY'] },
+  { id: 'sydney', labelEn: 'Sydney', labelTh: 'ซิดนีย์', folders: ['SYDNEY'] },
 ] as const;
 
 /** Gradient fallbacks when cover images fail to load (never plain black). */
@@ -62,17 +56,19 @@ export function isRealTourCode(code: string): code is TourCode {
 
 export function portfolioImageUrl(path: string): string {
   const clean = path.replace(/^\/+/, '');
-  return `${STORAGE_PUBLIC_BASE}/${encodeURI(clean)}`;
+  return `${getStoragePublicBase()}/${encodeURI(clean)}`;
 }
 
-/** Rewrite legacy storage host or relative paths to the current portfolio CDN. */
+/** Normalize any storage URL or relative path to NEXT_PUBLIC_STORAGE_URL base. */
 export function normalizeCoverImageUrl(url: string | null | undefined): string | undefined {
   if (!url?.trim()) return undefined;
   const trimmed = url.trim();
+  const base = getStoragePublicBase();
+
   if (trimmed.startsWith('http')) {
-    return trimmed
-      .replace(/niuibpznjvytprbrzvnn\.supabase\.co/gi, `${STORAGE_SUPABASE_PROJECT}.supabase.co`)
-      .replace(/\/object\/public\/[^/]+\//, '/object/public/portfolio/');
+    const pathMatch = trimmed.match(/\/object\/public\/portfolio\/(.+)$/i);
+    if (pathMatch) return `${base}/${pathMatch[1]}`;
+    return trimmed.replace(/pcqxewzzypwxfldxkcxp\.supabase\.co/gi, 'niuibpznjvytprbrzvnn.supabase.co');
   }
   return portfolioImageUrl(trimmed);
 }

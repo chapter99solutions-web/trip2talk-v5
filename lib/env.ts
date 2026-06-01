@@ -1,7 +1,11 @@
-import { STORAGE_SUPABASE_PROJECT, SUPABASE_PROJECT } from './constants';
+/** Database project (trips, bookings, expenses). */
+export const SUPABASE_DB_PROJECT = 'pcqxewzzypwxfldxkcxp';
 
-const DEFAULT_SUPABASE_URL = `https://${SUPABASE_PROJECT}.supabase.co`;
-const DEFAULT_STORAGE_URL = `https://${STORAGE_SUPABASE_PROJECT}.supabase.co`;
+/** Portfolio images / gallery (original project). */
+export const STORAGE_PROJECT = 'niuibpznjvytprbrzvnn';
+
+const DEFAULT_SUPABASE_URL = `https://${SUPABASE_DB_PROJECT}.supabase.co`;
+const DEFAULT_STORAGE_PUBLIC_BASE = `https://${STORAGE_PROJECT}.supabase.co/storage/v1/object/public/portfolio`;
 
 function isUsableKey(key: string): boolean {
   if (!key) return false;
@@ -14,8 +18,15 @@ export function getSupabaseUrl(): string {
   return process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || DEFAULT_SUPABASE_URL;
 }
 
+/** Public portfolio CDN base (no trailing slash). */
+export function getStoragePublicBase(): string {
+  const url = process.env.NEXT_PUBLIC_STORAGE_URL?.trim();
+  return (url || DEFAULT_STORAGE_PUBLIC_BASE).replace(/\/+$/, '');
+}
+
+/** Supabase API host for storage.list (always the original portfolio project). */
 export function getStorageSupabaseUrl(): string {
-  return process.env.NEXT_PUBLIC_STORAGE_SUPABASE_URL?.trim() || DEFAULT_STORAGE_URL;
+  return `https://${STORAGE_PROJECT}.supabase.co`;
 }
 
 export function getSupabaseAnonKey(): string | null {
