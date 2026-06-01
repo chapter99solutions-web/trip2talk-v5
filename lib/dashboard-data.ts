@@ -1,3 +1,4 @@
+import { gasAddExpense } from './gas-client';
 import { getSupabaseSafe, type BookingRow, type ExpenseRow, type TripRow } from './supabase';
 import { loadTrips } from './trips';
 
@@ -20,6 +21,7 @@ export async function addExpense(tour_code: string | null, description: string, 
   if (!sb) throw new Error('Supabase not configured');
   const { error } = await sb.from('expenses').insert({ tour_code, description, amount });
   if (error) throw new Error(error.message);
+  await gasAddExpense({ tour_code, description, amount });
 }
 
 export async function upsertTrip(trip: Partial<TripRow> & { tour_code: string }) {

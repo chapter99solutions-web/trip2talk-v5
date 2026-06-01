@@ -1,6 +1,7 @@
 'use server';
 
 import { claimSeats, createBooking, generateBookingRef, releaseSeats } from '@/lib/bookings';
+import { gasAddBooking } from '@/lib/gas-client';
 
 export type SubmitBookingResult =
   | { ok: true; bookingRef: string }
@@ -26,8 +27,18 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
   }
 
   const booking_ref = generateBookingRef();
+  const status = 'confirmed';
   try {
     await createBooking({ tour_code, booking_ref, name, email, phone, seats });
+    await gasAddBooking({
+      booking_ref,
+      tour_code,
+      name,
+      email,
+      phone,
+      seats,
+      status,
+    });
     return { ok: true, bookingRef: booking_ref };
   } catch (e) {
     await releaseSeats(tour_code, seats);

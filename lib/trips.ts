@@ -1,4 +1,4 @@
-import { getGasUrl } from './env';
+import { gasGetTrips } from './gas-client';
 import { isRealTourCode, portfolioImageUrl, REAL_TOUR_CODES } from './constants';
 import { applyCanonicalTrip, getCanonicalSeed } from './trip-canonical';
 import { SEED_TRIPS, withIds } from './seed-trips';
@@ -59,20 +59,6 @@ function gasRowToTrip(row: Record<string, unknown>): TripRow | null {
   return applyCanonicalTrip(tour_code, operationalFromGasRow(row, seed));
 }
 
-async function fetchTripsFromGas(): Promise<Record<string, unknown>[] | null> {
-  const gasUrl = getGasUrl();
-  if (!gasUrl) return null;
-  try {
-    const res = await fetch(gasUrl, { cache: 'no-store' });
-    if (!res.ok) return null;
-    const json = (await res.json()) as { ok?: boolean; trips?: unknown[] };
-    if (!json.ok || !Array.isArray(json.trips)) return null;
-    return json.trips as Record<string, unknown>[];
-  } catch {
-    return null;
-  }
-}
-
 async function fetchTripsFromSupabase(): Promise<TripRow[] | null> {
   const sb = getSupabaseSafe();
   if (!sb) return null;
@@ -125,12 +111,20 @@ function mergeTrips(supabaseRows: TripRow[] | null, gasRows: Record<string, unkn
 }
 
 export async function loadTrips(): Promise<TripRow[]> {
-  const [sb, gas] = await Promise.all([fetchTripsFromSupabase(), fetchTripsFromGas()]);
-  const trips = mergeTrips(sb, gas);
-  if (trips.length !== REAL_TOUR_CODES.length) {
-    return REAL_TOUR_CODES.map((code) => getCanonicalSeed(code)!);
+  const gasRows = await gasGetTrips();
+  if (gasRows && gasRows.length > 0) {
+    const trips = mergeTrips(null, gasRows);
+    if (trips.length === REAL_TOUR_CODES.length) {
+      return trips;
+    }
   }
-  return trips;
+
+  const supabaseRows = await fetchTripsFromSupabase();
+  if (supabaseRows) {
+    return mergeTrips(supabaseRows, gasRows);
+  }
+
+  return REAL_TOUR_CODES.map((code) => getCanonicalSeed(code)!);
 }
 
 export async function loadTripByCode(tourCode: string): Promise<TripRow | null> {
