@@ -6,6 +6,7 @@ import { FLAGSHIP_TOUR_CODE } from '@/lib/constants';
 import { tripDisplayTitle } from '@/lib/trip-display';
 import { seatsRemaining, tripBookable } from '@/lib/trips';
 import { useI18n } from '@/lib/i18n';
+import CoverImage from './CoverImage';
 
 export default function TripCard({ trip }: { trip: TripRow }) {
   const { t, lang } = useI18n();
@@ -20,15 +21,14 @@ export default function TripCard({ trip }: { trip: TripRow }) {
         isFlagship ? 'border-gold ring-1 ring-gold/40' : 'border-slate-200'
       }`}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-        {trip.cover_image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={trip.cover_image}
-            alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : null}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <CoverImage
+          src={trip.cover_image}
+          alt={title}
+          tourCode={trip.tour_code}
+          className="absolute inset-0 w-full h-full"
+          imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
         {isFlagship && (
           <span className="absolute top-3 left-3 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-navy">
             {t('Flagship', 'ทริปไฮไลท์')}

@@ -33,10 +33,25 @@ export default function BookingForm({ trip }: { trip: TripRow }) {
   }
 
   if (!bookable) {
+    const soon = !trip.date;
     return (
-      <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
-        {t('This trip is not open for booking yet.', 'ทริปนี้ยังไม่เปิดจอง')}
-      </p>
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 space-y-2">
+        <p className="font-semibold text-amber-800">
+          {soon ? t('Coming soon', 'เร็วๆ นี้') : t('Booking unavailable', 'ยังจองไม่ได้')}
+        </p>
+        <p className="text-sm text-amber-700">
+          {soon
+            ? t('Dates will be announced soon. Check back or contact us.', 'จะประกาศวันเร็วๆ นี้')
+            : t('This trip is not open for booking right now.', 'ทริปนี้ยังไม่เปิดจอง')}
+        </p>
+        <button
+          type="button"
+          disabled
+          className="w-full rounded-full bg-slate-200 py-3 text-sm font-semibold text-slate-500 cursor-not-allowed"
+        >
+          {t('Book this trip', 'จองทริปนี้')}
+        </button>
+      </div>
     );
   }
 

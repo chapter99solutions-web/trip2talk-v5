@@ -1,5 +1,5 @@
 import { gasGetTrips } from './gas-client';
-import { isRealTourCode, portfolioImageUrl, REAL_TOUR_CODES } from './constants';
+import { isRealTourCode, normalizeCoverImageUrl, portfolioImageUrl, REAL_TOUR_CODES } from './constants';
 import { applyCanonicalTrip, getCanonicalSeed, guardAllowedTrips } from './trip-canonical';
 import { SEED_TRIPS, withIds } from './seed-trips';
 import { getSupabaseSafe, type TripRow } from './supabase';
@@ -56,9 +56,8 @@ function operationalFromGasRow(row: Record<string, unknown>, seed: TripRow): Par
         : seed.date;
   const coverPath = String(pickField(row, ['cover_image', 'Cover', 'coverUrl']) ?? '').trim();
   const cover_image = coverPath
-    ? coverPath.startsWith('http')
-      ? coverPath
-      : portfolioImageUrl(coverPath)
+    ? normalizeCoverImageUrl(coverPath.startsWith('http') ? coverPath : portfolioImageUrl(coverPath)) ??
+      seed.cover_image
     : seed.cover_image;
 
   return {
@@ -103,12 +102,11 @@ function mergeTrips(supabaseRows: TripRow[] | null, gasRows: Record<string, unkn
       const code = normalizeCode(row.tour_code);
       if (!isRealTourCode(code)) continue;
       const seed = byCode.get(code)!;
-      const cover =
-        row.cover_image?.startsWith('http')
-          ? row.cover_image
-          : row.cover_image
-            ? portfolioImageUrl(row.cover_image)
-            : seed.cover_image;
+      const cover = row.cover_image
+        ? normalizeCoverImageUrl(
+            row.cover_image.startsWith('http') ? row.cover_image : portfolioImageUrl(row.cover_image)
+          ) ?? seed.cover_image
+        : seed.cover_image;
       byCode.set(
         code,
         applyCanonicalTrip(code, {

@@ -58,7 +58,7 @@ export default function HomePage({ trips, slides }: { trips: TripRow[]; slides: 
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+      <section id="trips" className="max-w-6xl mx-auto px-4 py-16 md:py-24 scroll-mt-20">
         <h2 className="font-serif text-2xl md:text-3xl text-navy text-center mb-2">
           {t('Our trips', 'ทริปของเรา')}
         </h2>

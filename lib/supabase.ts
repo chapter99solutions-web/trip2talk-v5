@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from './env';
+import { getSupabaseAnonKey, getStorageSupabaseUrl, getSupabaseUrl, isSupabaseConfigured } from './env';
 
 export type TripRow = {
   id: string;
@@ -45,6 +45,7 @@ export type ClaimSeatsResult = {
 };
 
 let client: SupabaseClient | null = null;
+let storageClient: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient | null {
   if (!isSupabaseConfigured()) return null;
@@ -54,6 +55,17 @@ export function getSupabase(): SupabaseClient | null {
     client = createClient(url, key);
   }
   return client;
+}
+
+/** Client for portfolio storage (may be a different Supabase project). */
+export function getStorageSupabase(): SupabaseClient | null {
+  if (!isSupabaseConfigured()) return null;
+  const url = getStorageSupabaseUrl();
+  const key = getSupabaseAnonKey()!;
+  if (!storageClient) {
+    storageClient = createClient(url, key);
+  }
+  return storageClient;
 }
 
 export function getSupabaseSafe(): SupabaseClient | null {

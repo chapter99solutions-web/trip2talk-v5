@@ -7,6 +7,8 @@ import { tripDisplayTitle } from '@/lib/trip-display';
 import { seatsRemaining, tripBookable } from '@/lib/trips';
 import { useI18n } from '@/lib/i18n';
 import BookingForm from './BookingForm';
+import CoverImage from './CoverImage';
+import { saveTripCode } from './SavedTrips';
 
 const INCLUDES = [
   'Professional photo guide for the full trip',
@@ -28,16 +30,14 @@ export default function TripDetailView({ trip }: { trip: TripRow }) {
   return (
     <div>
       <div className="relative h-[55vh] min-h-[320px]">
-        {trip.cover_image && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={trip.cover_image}
-            alt={title}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ transform: 'translateZ(0)' }}
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
+        <CoverImage
+          src={trip.cover_image}
+          alt={title}
+          tourCode={trip.tour_code}
+          className="absolute inset-0 w-full h-full"
+          imgClassName="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 max-w-4xl">
           <p className="text-gold text-sm font-medium tracking-wide">{trip.tour_code}</p>
           <h1 className="font-serif text-3xl md:text-4xl text-white font-semibold mt-1">{title}</h1>
@@ -114,11 +114,18 @@ export default function TripDetailView({ trip }: { trip: TripRow }) {
           <BookingForm trip={trip} />
         </section>
 
-        <p>
+        <div className="flex flex-wrap gap-4 items-center">
+          <button
+            type="button"
+            className="text-sm text-navy border border-slate-300 rounded-full px-4 py-2 hover:bg-slate-50"
+            onClick={() => saveTripCode(trip.tour_code)}
+          >
+            {t('Save trip', 'บันทึกทริป')}
+          </button>
           <Link href="/" className="text-emerald-700 hover:underline text-sm">
             ← {t('All trips', 'ทริปทั้งหมด')}
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ export default function HeroSlideshow({ images }: { images: string[] }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={current} alt="" className="w-full h-full object-cover" />
       ) : (
-        <div className="w-full h-full bg-navy" />
+        <div className="w-full h-full bg-gradient-to-br from-slate-700 via-navy to-slate-900" />
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
     </div>

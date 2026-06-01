@@ -15,10 +15,13 @@ const sarabun = Sarabun({
 export const metadata: Metadata = {
   title: 'Trip2Talk — Private Photo Journey',
   description: 'Capture the World, One Journey',
+  applicationName: 'Trip2Talk',
+  appleWebApp: { capable: true, title: 'Trip2Talk' },
+  icons: { icon: '/icon.svg', apple: '/icon.svg' },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0d1b2a',
+  themeColor: '#0a0a0a',
 };
 
 export const dynamic = 'force-dynamic';

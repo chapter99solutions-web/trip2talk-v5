@@ -1,5 +1,5 @@
 import { portfolioImageUrl, STORAGE_PUBLIC_BASE } from './constants';
-import { getSupabaseSafe } from './supabase';
+import { getStorageSupabase } from './supabase';
 
 export type StorageImage = { name: string; url: string; folder: string };
 
@@ -16,7 +16,7 @@ const HERO_FALLBACK_URLS = [
 ];
 
 async function listMixedCoverFlat(): Promise<string[]> {
-  const sb = getSupabaseSafe();
+  const sb = getStorageSupabase();
   if (!sb) return [];
   const { data, error } = await sb.storage.from('portfolio').list('Mixed Cover', {
     limit: 50,
@@ -29,7 +29,7 @@ async function listMixedCoverFlat(): Promise<string[]> {
 }
 
 async function listFolder(folder: string): Promise<StorageImage[]> {
-  const sb = getSupabaseSafe();
+  const sb = getStorageSupabase();
   if (!sb) return [];
   const { data, error } = await sb.storage.from('portfolio').list(folder, {
     limit: 200,

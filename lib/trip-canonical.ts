@@ -2,7 +2,7 @@ import type { TripRow } from './supabase';
 import { isRealTourCode, REAL_TOUR_CODES } from './constants';
 import { SEED_TRIPS, withIds } from './seed-trips';
 
-/** Substrings that must never appear in trip display names (legacy V4 marketing). */
+/** Legacy V4 marketing title fragments — never render if present in a row name. */
 export const RUNTIME_REJECTED_NAME_SNIPPETS = [
   'alpine',
   'southern coast',
@@ -65,8 +65,7 @@ export function applyCanonicalTrip(tourCode: string, operational: Partial<TripRo
 /**
  * Final gate before any trip list hits the UI:
  * - exactly 8 allowed tour_codes
- * - canonical names only
- * - drops rejected marketing titles
+ * - drops rows with rejected marketing titles (unless code maps to a real trip → canonical)
  */
 export function guardAllowedTrips(trips: TripRow[]): TripRow[] {
   const byCode = new Map<string, TripRow>();
@@ -74,10 +73,11 @@ export function guardAllowedTrips(trips: TripRow[]): TripRow[] {
   for (const row of trips) {
     const code = row.tour_code?.trim().toUpperCase();
     if (!code || !isRealTourCode(code)) continue;
-    if (isRejectedTripName(row.name) || isRejectedTripName(row.name_th ?? '')) {
-      byCode.set(code, applyCanonicalTrip(code, operationalOnly(row)));
-      continue;
-    }
+
+    const rejected =
+      isRejectedTripName(row.name) || isRejectedTripName(row.name_th ?? '');
+    if (rejected && !getCanonicalSeed(code)) continue;
+
     byCode.set(code, applyCanonicalTrip(code, operationalOnly(row)));
   }
 

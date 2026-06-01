@@ -1,6 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DASHBOARD_PINS, type DashboardRole } from '@/lib/constants';
+import type { BookingRow, ExpenseRow, TripRow } from '@/lib/supabase';
+import { adjustSeats, markCheckedIn } from '@/app/actions/booking';
+import { tripDisplayTitle } from '@/lib/trip-display';
+import { useI18n } from '@/lib/i18n';
 
 function PlatformTripEditor({
   trips,
@@ -82,11 +87,6 @@ function PlatformTripEditor({
   );
 }
 
-import { DASHBOARD_PINS, type DashboardRole } from '@/lib/constants';
-import type { BookingRow, ExpenseRow, TripRow } from '@/lib/supabase';
-import { adjustSeats, markCheckedIn } from '@/app/actions/booking';
-import { useI18n } from '@/lib/i18n';
-
 type Props = {
   initialTrips: TripRow[];
   initialBookings: BookingRow[];
@@ -98,8 +98,15 @@ function roleFromPin(pin: string): DashboardRole | null {
   return entry ? (entry[0] as DashboardRole) : null;
 }
 
+const ROLE_TITLE: Record<DashboardRole, { en: string; th: string }> = {
+  staff: { en: 'Staff', th: 'ทีมงาน' },
+  cohost: { en: 'Co-Host', th: 'Co-Host' },
+  owner: { en: 'Owner', th: 'เจ้าของ' },
+  platform: { en: 'Platform', th: 'แพลตฟอร์ม' },
+};
+
 export default function DashboardView({ initialTrips, initialBookings, initialExpenses }: Props) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [pin, setPin] = useState('');
   const [role, setRole] = useState<DashboardRole | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -163,8 +170,8 @@ export default function DashboardView({ initialTrips, initialBookings, initialEx
     return (
       <div className="min-h-screen bg-navy flex items-center justify-center px-4">
         <form onSubmit={tryLogin} className="w-full max-w-sm bg-white rounded-2xl p-8 shadow-xl space-y-4">
-          <h1 className="font-serif text-2xl text-navy text-center">{t('Staff access', 'เข้าสู่ระบบทีมงาน')}</h1>
-          <p className="text-sm text-slate-500 text-center">{t('Enter 4-digit PIN', 'กรอกรหัส 4 หลัก')}</p>
+          <h1 className="font-serif text-2xl text-navy text-center">Trip2Talk Portal</h1>
+          <p className="text-sm text-slate-500 text-center">{t('Enter your 4-digit PIN', 'กรอกรหัส 4 หลัก')}</p>
           {error && <p className="text-sm text-red-600 text-center">{error}</p>}
           <input
             type="password"
@@ -185,7 +192,9 @@ export default function DashboardView({ initialTrips, initialBookings, initialEx
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-navy text-white px-4 py-4 flex justify-between items-center">
-        <span className="font-semibold capitalize">{role} dashboard</span>
+        <span className="font-semibold">
+          {lang === 'TH' ? ROLE_TITLE[role].th : ROLE_TITLE[role].en} {t('dashboard', 'แดชบอร์ด')}
+        </span>
         <button
           type="button"
           className="text-sm text-white/80 hover:text-white"
@@ -260,7 +269,7 @@ export default function DashboardView({ initialTrips, initialBookings, initialEx
             >
               {trips.map((tr) => (
                 <option key={tr.tour_code} value={tr.tour_code}>
-                  {tr.tour_code} — {tr.name}
+                  {tr.tour_code} — {tripDisplayTitle(tr, lang)}
                 </option>
               ))}
             </select>
