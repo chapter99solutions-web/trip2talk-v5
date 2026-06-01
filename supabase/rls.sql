@@ -11,3 +11,6 @@ CREATE POLICY "anon insert bookings" ON bookings FOR INSERT TO anon WITH CHECK (
 -- Allow anon to call seat RPCs
 GRANT EXECUTE ON FUNCTION claim_seats TO anon;
 GRANT EXECUTE ON FUNCTION release_seats TO anon;
+
+-- Duplicate booking check (see booking-one-per-email.sql)
+GRANT EXECUTE ON FUNCTION check_booking_allowed(text, text) TO anon;

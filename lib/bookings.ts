@@ -5,6 +5,22 @@ export function generateBookingRef(): string {
   return `T2T-${Date.now().toString(36).toUpperCase().slice(-4)}${part}`;
 }
 
+export async function checkBookingAllowed(
+  email: string,
+  tourCode: string
+): Promise<ClaimSeatsResult> {
+  const sb = getSupabaseSafe();
+  if (!sb) return { ok: false, reason: 'booking unavailable' };
+  const { data, error } = await sb.rpc('check_booking_allowed', {
+    p_email: email.trim(),
+    p_tour_code: tourCode.toUpperCase(),
+  });
+  if (error) {
+    return { ok: false, reason: error.message };
+  }
+  return (data ?? { ok: false, reason: 'unknown' }) as ClaimSeatsResult;
+}
+
 export async function claimSeats(tourCode: string, seats: number): Promise<ClaimSeatsResult> {
   const sb = getSupabaseSafe();
   if (!sb) return { ok: false, reason: 'booking unavailable' };

@@ -63,6 +63,26 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION check_booking_allowed(p_email text, p_tour_code text)
+RETURNS json AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM bookings
+    WHERE lower(trim(email)) = lower(trim(p_email))
+      AND tour_code = upper(trim(p_tour_code))
+      AND status IS DISTINCT FROM 'cancelled'
+  ) THEN
+    RETURN json_build_object('ok', false, 'reason', 'already booked');
+  END IF;
+  RETURN json_build_object('ok', true);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+CREATE UNIQUE INDEX IF NOT EXISTS bookings_one_active_per_email_tour
+  ON bookings (lower(trim(email)), tour_code)
+  WHERE (status IS DISTINCT FROM 'cancelled');
+
 INSERT INTO trips (tour_code, name, name_th, price, max_seats, duration, season, cover_image) VALUES
 ('TAS-3D2N', 'Tasmania 3D2N', 'แทสเมเนีย 3 วัน 2 คืน', 1200, 6, '3D2N', 'All Year', 'Tasmania/596873932_1428638042594626_8987722411601397177_n.jpg'),
 ('MEL-4D3N', 'Melbourne 4D3N', 'เมลเบิร์น 4 วัน 3 คืน', 1350, 6, '4D3N', 'All Year', 'Melbourne/01.jpg'),

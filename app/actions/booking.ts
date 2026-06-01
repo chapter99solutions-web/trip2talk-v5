@@ -1,11 +1,17 @@
 'use server';
 
-import { claimSeats, createBooking, generateBookingRef, releaseSeats } from '@/lib/bookings';
+import {
+  checkBookingAllowed,
+  claimSeats,
+  createBooking,
+  generateBookingRef,
+  releaseSeats,
+} from '@/lib/bookings';
 import { gasAddBooking } from '@/lib/gas-client';
 
 export type SubmitBookingResult =
   | { ok: true; bookingRef: string }
-  | { ok: false; error: string };
+  | { ok: false; error: string; code?: 'already_booked' };
 
 export async function submitBooking(formData: FormData): Promise<SubmitBookingResult> {
   const tour_code = String(formData.get('tour_code') || '').trim().toUpperCase();
@@ -21,6 +27,15 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
     return { ok: false, error: 'Invalid seat count.' };
   }
 
+  const normalizedEmail = email.toLowerCase();
+  const allowed = await checkBookingAllowed(normalizedEmail, tour_code);
+  if (!allowed.ok) {
+    if (allowed.reason === 'already booked') {
+      return { ok: false, error: 'already booked', code: 'already_booked' };
+    }
+    return { ok: false, error: allowed.reason || 'Could not verify booking.' };
+  }
+
   const claim = await claimSeats(tour_code, seats);
   if (!claim.ok) {
     return { ok: false, error: claim.reason || 'Could not reserve seats.' };
@@ -29,7 +44,7 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
   const booking_ref = generateBookingRef();
   const status = 'confirmed';
   try {
-    await createBooking({ tour_code, booking_ref, name, email, phone, seats });
+    await createBooking({ tour_code, booking_ref, name, email: normalizedEmail, phone, seats });
     await gasAddBooking({
       booking_ref,
       tour_code,
@@ -42,7 +57,11 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
     return { ok: true, bookingRef: booking_ref };
   } catch (e) {
     await releaseSeats(tour_code, seats);
-    return { ok: false, error: e instanceof Error ? e.message : 'Booking save failed.' };
+    const msg = e instanceof Error ? e.message : 'Booking save failed.';
+    if (/bookings_one_active_per_email_tour|duplicate key/i.test(msg)) {
+      return { ok: false, error: 'already booked', code: 'already_booked' };
+    }
+    return { ok: false, error: msg };
   }
 }
 
