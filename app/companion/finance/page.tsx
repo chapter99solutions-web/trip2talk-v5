@@ -1,12 +1,13 @@
 'use client';
 
-import { StaffGate } from '@/components/companion/StaffGate';
-import OwnerFinanceView from '@/components/companion/staff/OwnerFinanceView';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function CompanionFinancePage() {
-  return (
-    <StaffGate role="owner">
-      <OwnerFinanceView />
-    </StaffGate>
-  );
+/** @deprecated Use /companion/owner/finance */
+export default function CompanionFinanceRedirect() {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace('/companion/owner/finance');
+  }, [router]);
+  return null;
 }

@@ -74,18 +74,27 @@ export function OwnerHome() {
   return (
     <HomeShell staffRole="owner">
       <h1 className="font-serif text-2xl font-semibold mt-2">แดชบอร์ดเจ้าของ</h1>
-      <p className="text-white/60 text-sm mt-1">ภาพรวมการเงิน ทริป และ consent</p>
+      <p className="text-white/60 text-sm mt-1">บันทึกธุรกิจ · การเงิน · ลูกค้า · รีวิว</p>
       <div className="mt-4 grid gap-2">
-        <Link href="/companion/finance" className="rounded-2xl bg-companion-accent text-companion-dark p-4 font-semibold">
-          💵 การเงิน
+        <Link href="/companion/owner/finance" className="rounded-2xl bg-companion-accent text-companion-dark p-4 font-semibold">
+          💵 Finance Dashboard
         </Link>
-        <Link href="/companion/trips-admin" className="rounded-2xl bg-companion-card text-companion-text-dark p-4">
+        <Link href="/companion/owner/passport" className="rounded-2xl bg-companion-card text-companion-text-dark p-4">
+          📘 Business Passport
+        </Link>
+        <Link href="/companion/owner/reviews" className="rounded-2xl bg-companion-card text-companion-text-dark p-4">
+          ⭐ Reviews Manager
+        </Link>
+        <Link href="/companion/owner/customers" className="rounded-2xl bg-companion-card text-companion-text-dark p-4">
+          👥 Customer Database
+        </Link>
+        <Link href="/companion/trips-admin" className="rounded-2xl bg-companion-surface border border-white/10 p-3 text-sm text-center">
           🗺️ ทริปทั้งหมด
         </Link>
-        <Link href="/companion/consents" className="rounded-2xl bg-companion-card text-companion-text-dark p-4">
+        <Link href="/companion/consents" className="rounded-2xl bg-companion-surface border border-white/10 p-3 text-sm text-center">
           ✅ Consent
         </Link>
-        <Link href="/companion/manage" className="rounded-2xl bg-companion-card text-companion-text-dark p-4">
+        <Link href="/companion/manage" className="rounded-2xl bg-companion-surface border border-white/10 p-3 text-sm text-center">
           ⚙️ จัดการ
         </Link>
       </div>

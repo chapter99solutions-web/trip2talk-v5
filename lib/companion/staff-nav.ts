@@ -29,10 +29,10 @@ export const STAFF_NAV: Record<StaffRole, NavTab[]> = {
   ],
   owner: [
     { href: '/companion/home', icon: '🏠', labelTh: 'หน้าแรก' },
-    { href: '/companion/finance', icon: '💵', labelTh: 'การเงิน' },
-    { href: '/companion/trips-admin', icon: '🗺️', labelTh: 'ทริปทั้งหมด' },
-    { href: '/companion/consents', icon: '✅', labelTh: 'Consent' },
-    { href: '/companion/manage', icon: '⚙️', labelTh: 'จัดการ' },
+    { href: '/companion/owner/finance', icon: '💵', labelTh: 'การเงิน' },
+    { href: '/companion/owner/passport', icon: '📘', labelTh: 'Passport' },
+    { href: '/companion/owner/reviews', icon: '⭐', labelTh: 'รีวิว' },
+    { href: '/companion/owner/customers', icon: '👥', labelTh: 'ลูกค้า' },
   ],
 };
 
