@@ -80,22 +80,30 @@ function getOrCreateSheet_(name, headers) {
   return sheet;
 }
 
-function readTripsFromSheet_() {
+/**
+ * Read Trip info sheet using row 1 as headers and row 2+ as data.
+ * Returns objects keyed by the Title-Case headers (e.g. "Tour Code").
+ */
+function readTrips_() {
   var sheet = getSpreadsheet_().getSheetByName(TRIPS_TAB);
-  if (!sheet) return [];
+  if (!sheet) throw new Error('Missing tab: ' + TRIPS_TAB);
+
   var rows = sheet.getDataRange().getValues();
   if (rows.length < 2) return [];
-  var headers = rows[0];
+
+  var headers = rows[0] || [];
+  var headerCount = headers.length;
+
   return rows
     .slice(1)
     .filter(function (r) {
-      return r[0];
+      return r && r[0];
     })
     .map(function (r) {
       var obj = {};
-      headers.forEach(function (h, i) {
-        obj[h] = r[i];
-      });
+      for (var i = 0; i < headerCount; i++) {
+        obj[headers[i]] = r[i];
+      }
       return obj;
     })
     .filter(function (obj) {
@@ -112,14 +120,8 @@ function readTripsFromSheet_() {
 }
 
 function getTripsResponse_() {
-  var trips = readTripsFromSheet_();
-  return respond({
-    ok: true,
-    action: 'getTrips',
-    version: '1.2',
-    trips: trips,
-    read: { tab: TRIPS_TAB, tripCount: trips.length },
-  });
+  var trips = readTrips_();
+  return respond({ status: 'ok', data: trips });
 }
 
 function addBooking_(body) {
@@ -177,9 +179,9 @@ function doGet(e) {
     if (action === 'getTrips') {
       return getTripsResponse_();
     }
-    return respond({ ok: false, reason: 'unknown action: ' + action });
+    return respond({ status: 'error', reason: 'unknown action: ' + action });
   } catch (err) {
-    return respond({ ok: false, reason: err.message });
+    return respond({ status: 'error', reason: err.message });
   }
 }
 
