@@ -85,8 +85,29 @@ function getOrCreateSheet_(name, headers) {
  * Returns objects keyed by the Title-Case headers (e.g. "Tour Code").
  */
 function readTrips_() {
-  var sheet = getSpreadsheet_().getSheetByName(TRIPS_TAB);
-  if (!sheet) throw new Error('Missing tab: ' + TRIPS_TAB);
+  var ss = getSpreadsheet_();
+  var sheet = ss.getSheetByName(TRIPS_TAB);
+  if (!sheet) {
+    // Fallback for minor naming drift (case/whitespace) while keeping the canonical tab constant.
+    var want = String(TRIPS_TAB).trim().toLowerCase();
+    var all = ss.getSheets();
+    for (var i = 0; i < all.length; i++) {
+      var n = String(all[i].getName() || '').trim().toLowerCase();
+      if (n === want) {
+        sheet = all[i];
+        break;
+      }
+    }
+  }
+  if (!sheet) {
+    var names = ss
+      .getSheets()
+      .map(function (s) {
+        return s.getName();
+      })
+      .join(', ');
+    throw new Error('Missing tab: ' + TRIPS_TAB + ' (available: ' + names + ')');
+  }
 
   var rows = sheet.getDataRange().getValues();
   if (rows.length < 2) return [];
@@ -176,12 +197,16 @@ function parsePostBody_(e) {
 function doGet(e) {
   try {
     var action = (e && e.parameter && e.parameter.action) || 'getTrips';
-    if (action === 'getTrips') {
+    var actionNorm = String(action || '')
+      .trim()
+      .toLowerCase();
+
+    if (actionNorm === 'gettrips') {
       return getTripsResponse_();
     }
     return respond({ status: 'error', reason: 'unknown action: ' + action });
   } catch (err) {
-    return respond({ status: 'error', reason: err.message });
+    return respond({ status: 'error', message: String(err && err.message ? err.message : err) });
   }
 }
 
