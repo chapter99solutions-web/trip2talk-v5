@@ -4,16 +4,24 @@ import type { TripRow } from '@/lib/supabase';
 import { FLAGSHIP_TOUR_CODE } from '@/lib/constants';
 import { isTripComingSoon } from '@/lib/trip-categories';
 import TripCard from './TripCard';
+import type { TripsListingVariant } from './TripsListingSection';
 
 type Props = {
   trips: TripRow[];
   animationKey: string;
+  variant?: TripsListingVariant;
 };
 
-export default function TripsGrid({ trips, animationKey }: Props) {
+export default function TripsGrid({ trips, animationKey, variant = 'default' }: Props) {
   if (trips.length === 0) {
     return (
-      <p className="text-center text-slate-500 py-12 text-sm">
+      <p
+        className={
+          variant === 'luxury'
+            ? 'py-12 text-center text-sm text-luxury-ink-muted'
+            : 'py-12 text-center text-sm text-slate-500'
+        }
+      >
         ไม่พบทริปในหมวดนี้
       </p>
     );
@@ -32,7 +40,12 @@ export default function TripsGrid({ trips, animationKey }: Props) {
             key={trip.tour_code}
             className={isFlagship ? 'col-span-2 row-span-1' : undefined}
           >
-            <TripCard trip={trip} comingSoon={comingSoon} featuredLayout={isFlagship} />
+            <TripCard
+              trip={trip}
+              comingSoon={comingSoon}
+              featuredLayout={isFlagship}
+              variant={variant}
+            />
           </div>
         );
       })}

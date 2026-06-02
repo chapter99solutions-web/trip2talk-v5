@@ -9,7 +9,7 @@ Next.js 14 · Private Photo Journey PWA · Supabase `niuibpznjvytprbrzvnn` · Ve
 3. Copy `.env.example` → `.env.local` and set keys:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://niuibpznjvytprbrzvnn.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://pcqxewzzypwxfldxkcxp.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 NEXT_PUBLIC_GAS_URL=https://script.google.com/macros/s/.../exec
 ```

@@ -1,147 +1,16 @@
 'use client';
 
-import { Suspense } from 'react';
 import type { TripRow } from '@/lib/supabase';
+import HomeHero from './home/HomeHero';
+import HomeTrustBar from './home/HomeTrustBar';
+import HomeTripsSection from './home/HomeTripsSection';
 
-import { useI18n } from '@/lib/i18n';
-
-import SiteHeader from './SiteHeader';
-
-import HeroSlideshow from './HeroSlideshow';
-
-import TripsListingSection from './TripsListingSection';
-
-import LangToggle from './LangToggle';
-
-
-
-const STATS = [
-
-  {
-
-    labelEn: '13 Curated Trips',
-
-    labelTh: '13 ทริปคัดสรร',
-
-  },
-
-  {
-
-    labelEn: 'Small Group Max 6',
-
-    labelTh: 'Small Group Max 6',
-
-  },
-
-  {
-
-    labelEn: 'Led by พี่แสน',
-
-    labelTh: 'Led by พี่แสน',
-
-  },
-
-] as const;
-
-
-
-export default function HomePage({ trips, slides }: { trips: TripRow[]; slides: string[] }) {
-
-  const { t, lang } = useI18n();
-
-
-
+export default function HomePage({ trips }: { trips: TripRow[] }) {
   return (
-
-    <div className="min-h-screen bg-white">
-
-      <section className="relative h-screen min-h-[560px] flex flex-col">
-
-        <HeroSlideshow images={slides} />
-
-        <div className="absolute top-4 right-4 z-30 md:hidden">
-
-          <LangToggle />
-
-        </div>
-
-        <SiteHeader dark />
-
-        <div className="relative z-20 flex flex-1 flex-col items-center justify-center text-center px-4 pb-24">
-
-          <h1 className="font-serif text-4xl md:text-6xl text-white font-semibold max-w-3xl drop-shadow-lg">
-
-            Capture the World, One Journey
-
-          </h1>
-
-          <p className="mt-4 text-lg md:text-xl text-white/90 max-w-xl">
-
-            {t(
-
-              'Private Photo Journeys — small groups, real light, your story.',
-
-              'ทริปถ่ายภาพส่วนตัว — กลุ่มเล็ก แสงจริง เรื่องราวของคุณ'
-
-            )}
-
-          </p>
-
-        </div>
-
-      </section>
-
-
-
-      <section className="border-b border-slate-100 bg-slate-50">
-
-        <div className="max-w-4xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-
-          {STATS.map((stat) => (
-
-            <div key={stat.labelEn}>
-
-              <p className="font-serif text-xl md:text-2xl text-navy font-semibold">
-
-                {lang === 'TH' ? stat.labelTh : stat.labelEn}
-
-              </p>
-
-            </div>
-
-          ))}
-
-        </div>
-
-      </section>
-
-
-
-      <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
-
-        <h2 className="font-serif text-2xl md:text-3xl text-navy text-center mb-2">
-
-          {t('Our trips', 'ทริปของเรา')}
-
-        </h2>
-
-        <p className="text-center text-slate-500 mb-6 text-sm">
-
-          {t('Curated journeys — no filler packages.', 'ทริปคัดสรร — ไม่มีแพ็กเกจปลอม')}
-
-        </p>
-
-        <Suspense fallback={<p className="text-center text-slate-500 py-12 text-sm">กำลังโหลด…</p>}>
-          <TripsListingSection trips={trips} id="trips" />
-        </Suspense>
-
-
-      </div>
-
+    <div className="home-luxury min-h-screen bg-luxury-bg text-luxury-ink">
+      <HomeHero />
+      <HomeTrustBar />
+      <HomeTripsSection trips={trips} />
     </div>
-
   );
-
 }
-
-

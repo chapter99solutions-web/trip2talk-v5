@@ -14,12 +14,15 @@ import { useI18n } from '@/lib/i18n';
 import TripCategoryFilters from './TripCategoryFilters';
 import TripsGrid from './TripsGrid';
 
+export type TripsListingVariant = 'default' | 'luxury';
+
 type Props = {
   trips: TripRow[];
   /** When true, filter changes navigate to /trips?cat= */
   useTripsRoute?: boolean;
   id?: string;
   className?: string;
+  variant?: TripsListingVariant;
 };
 
 export default function TripsListingSection({
@@ -27,6 +30,7 @@ export default function TripsListingSection({
   useTripsRoute = false,
   id = 'trips',
   className = '',
+  variant = 'default',
 }: Props) {
   const { t } = useI18n();
   const router = useRouter();
@@ -72,18 +76,27 @@ export default function TripsListingSection({
   const gridKey = `${activeCategory.slug}-${displayBookable.length}-${comingSoon.length}`;
 
   return (
-    <section id={id} className={`scroll-mt-20 ${className}`}>
-      <TripCategoryFilters trips={sortedAll} active={activeCategory} onSelect={onSelectCategory} />
+    <section {...(id ? { id } : {})} className={`${id ? 'scroll-mt-20' : ''} ${className}`}>
+      <TripCategoryFilters
+        trips={sortedAll}
+        active={activeCategory}
+        onSelect={onSelectCategory}
+        variant={variant}
+      />
 
       <div className="mt-8">
-        <TripsGrid trips={displayBookable} animationKey={`bookable-${gridKey}`} />
+        <TripsGrid trips={displayBookable} animationKey={`bookable-${gridKey}`} variant={variant} />
 
         {showComingSoonSection && (
           <div className="mt-10 col-span-full">
             <button
               type="button"
               onClick={() => setComingSoonOpen((o) => !o)}
-              className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-navy hover:bg-slate-100"
+              className={
+                variant === 'luxury'
+                  ? 'flex w-full cursor-pointer items-center justify-between rounded-xl border border-luxury-border bg-luxury-elevated px-4 py-3 text-left text-sm font-semibold text-luxury-ink transition-colors duration-300 hover:border-luxury-gold/40 hover:bg-luxury-surface'
+                  : 'flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-navy hover:bg-slate-100'
+              }
               aria-expanded={comingSoonOpen}
             >
               <span>
@@ -95,7 +108,7 @@ export default function TripsListingSection({
             </button>
             {comingSoonOpen && (
               <div className="mt-4">
-                <TripsGrid trips={comingSoon} animationKey={`soon-${gridKey}`} />
+                <TripsGrid trips={comingSoon} animationKey={`soon-${gridKey}`} variant={variant} />
               </div>
             )}
           </div>

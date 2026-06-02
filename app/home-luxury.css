@@ -1,0 +1,90 @@
+/* Trip2Talk homepage — luxury photography tour tokens (UI UX Pro Max + brand overrides) */
+
+.home-luxury {
+  --lux-bg: #050505;
+  --lux-surface: #0f0f11;
+  --lux-elevated: #16161a;
+  --lux-border: rgba(201, 169, 98, 0.22);
+  --lux-gold: #c9a962;
+  --lux-gold-bright: #e8d5a3;
+  --lux-gold-dim: #8a7342;
+  --lux-ink: #f5f2eb;
+  --lux-ink-muted: #b8b0a6;
+  --lux-overlay: rgba(0, 0, 0, 0.45);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes home-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes home-hero-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes home-scroll-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(6px);
+  }
+}
+
+.home-animate-in {
+  animation: home-fade-up 1s var(--ease-out-expo) both;
+}
+
+.home-animate-in-delay-1 {
+  animation-delay: 0.12s;
+}
+
+.home-animate-in-delay-2 {
+  animation-delay: 0.24s;
+}
+
+.home-animate-in-delay-3 {
+  animation-delay: 0.36s;
+}
+
+.home-animate-in-delay-4 {
+  animation-delay: 0.48s;
+}
+
+.home-gold-line {
+  transform-origin: left center;
+  animation: home-hero-line 1.1s var(--ease-out-expo) 0.2s both;
+}
+
+.home-scroll-cue {
+  animation: home-scroll-pulse 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-animate-in,
+  .home-animate-in-delay-1,
+  .home-animate-in-delay-2,
+  .home-animate-in-delay-3,
+  .home-animate-in-delay-4,
+  .home-gold-line,
+  .home-scroll-cue {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

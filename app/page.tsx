@@ -1,9 +1,9 @@
 ﻿import { sortTripsForDisplay } from '@/lib/seed-trips';
 import { loadTrips } from '@/lib/trips';
-import { listHeroSlides } from '@/lib/storage';
 import HomePage from '@/components/HomePage';
+import './home-luxury.css';
 
 export default async function Page() {
-  const [trips, slides] = await Promise.all([loadTrips(), listHeroSlides()]);
-  return <HomePage trips={sortTripsForDisplay(trips)} slides={slides} />;
+  const trips = sortTripsForDisplay(await loadTrips());
+  return <HomePage trips={trips} />;
 }

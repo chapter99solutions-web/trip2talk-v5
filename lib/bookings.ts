@@ -24,14 +24,44 @@ export async function checkBookingAllowed(
 export async function claimSeats(tourCode: string, seats: number): Promise<ClaimSeatsResult> {
   const sb = getSupabaseSafe();
   if (!sb) return { ok: false, reason: 'booking unavailable' };
-  const { data, error } = await sb.rpc('claim_seats', {
-    p_tour_code: tourCode.toUpperCase(),
-    p_seats: seats,
-  });
-  if (error) {
-    return { ok: false, reason: error.message };
+  const code = tourCode.trim().toUpperCase();
+
+  // Lookup by public.trips.tour_code (same rules as claim_seats RPC; avoids FOR UPDATE + RLS blind spot).
+  const { data: row, error: lookupError } = await sb
+    .from('trips')
+    .select('tour_code, max_seats, seats_taken, date')
+    .eq('tour_code', code)
+    .maybeSingle();
+
+  if (lookupError) {
+    return { ok: false, reason: lookupError.message };
   }
-  return (data ?? { ok: false, reason: 'unknown' }) as ClaimSeatsResult;
+  if (!row) {
+    return { ok: false, reason: 'trip not found' };
+  }
+  if (!row.date) {
+    return { ok: false, reason: 'no date set' };
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  if (row.date < today) {
+    return { ok: false, reason: 'trip already departed' };
+  }
+  if (row.seats_taken + seats > row.max_seats) {
+    return { ok: false, reason: 'not enough seats' };
+  }
+
+  const { error: updateError } = await sb
+    .from('trips')
+    .update({ seats_taken: row.seats_taken + seats })
+    .eq('tour_code', code);
+
+  if (updateError) {
+    return { ok: false, reason: updateError.message };
+  }
+  return {
+    ok: true,
+    seats_remaining: row.max_seats - row.seats_taken - seats,
+  };
 }
 
 export async function releaseSeats(tourCode: string, seats: number): Promise<ClaimSeatsResult> {

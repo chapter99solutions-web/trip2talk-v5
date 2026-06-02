@@ -7,17 +7,20 @@ import { tripDisplayTitle } from '@/lib/trip-display';
 import { seatsRemaining, tripBookable } from '@/lib/trips';
 import { useI18n } from '@/lib/i18n';
 import CoverImage from './CoverImage';
+import type { TripsListingVariant } from './TripsListingSection';
 
 type TripCardProps = {
   trip: TripRow;
   comingSoon?: boolean;
   featuredLayout?: boolean;
+  variant?: TripsListingVariant;
 };
 
 export default function TripCard({
   trip,
   comingSoon = false,
   featuredLayout = false,
+  variant = 'default',
 }: TripCardProps) {
   const { t, lang } = useI18n();
   const remaining = seatsRemaining(trip);
@@ -25,14 +28,19 @@ export default function TripCard({
   const title = tripDisplayTitle(trip, lang);
   const isFlagship = trip.tour_code === FLAGSHIP_TOUR_CODE || trip.featured;
   const dimmed = comingSoon;
+  const luxury = variant === 'luxury';
 
   return (
     <article
-      className={`rounded-2xl overflow-hidden border bg-white shadow-sm transition-shadow duration-150 ${
-        dimmed ? 'opacity-70' : 'group hover:shadow-lg'
-      } ${isFlagship ? 'border-gold ring-1 ring-gold/40' : 'border-slate-200'} ${
-        featuredLayout ? 'h-full' : ''
-      }`}
+      className={`overflow-hidden rounded-2xl border transition-all duration-300 ${
+        luxury
+          ? `bg-luxury-elevated shadow-lg shadow-black/40 ${
+              dimmed ? 'opacity-70' : 'group hover:border-luxury-gold/35 hover:shadow-xl hover:shadow-black/50'
+            } ${isFlagship ? 'border-luxury-gold ring-1 ring-luxury-gold/30' : 'border-luxury-border'}`
+          : `bg-white shadow-sm ${dimmed ? 'opacity-70' : 'group hover:shadow-lg'} ${
+              isFlagship ? 'border-gold ring-1 ring-gold/40' : 'border-slate-200'
+            }`
+      } ${featuredLayout ? 'h-full' : ''}`}
     >
       <div
         className={`relative overflow-hidden ${
@@ -49,7 +57,11 @@ export default function TripCard({
           }`}
         />
         {isFlagship && (
-          <span className="absolute top-3 left-3 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-navy">
+          <span
+            className={`absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-semibold ${
+              luxury ? 'bg-luxury-gold text-luxury-bg' : 'bg-gold text-navy'
+            }`}
+          >
             {t('Flagship', 'ทริปไฮไลท์')}
           </span>
         )}
@@ -66,26 +78,33 @@ export default function TripCard({
       </div>
       <div className={`space-y-2 ${featuredLayout ? 'p-6' : 'p-5'}`}>
         <h3
-          className={`font-serif font-semibold text-navy ${
-            featuredLayout ? 'text-xl md:text-2xl' : 'text-lg'
-          }`}
+          className={`font-serif font-semibold ${
+            luxury ? 'text-luxury-ink' : 'text-navy'
+          } ${featuredLayout ? 'text-xl md:text-2xl' : 'text-lg'}`}
         >
           {title}
         </h3>
-        <p className="text-sm text-slate-500">
+        <p className={`text-sm ${luxury ? 'text-luxury-ink-muted' : 'text-slate-500'}`}>
           {trip.duration} · {trip.season}
         </p>
-        <p className="text-lg font-semibold text-teal-dark">
+        <p className={`text-lg font-semibold ${luxury ? 'text-luxury-gold-bright' : 'text-teal-dark'}`}>
           ${trip.price}
-          <span className="text-sm font-normal text-slate-500"> {t('AUD / person', 'AUD / คน')}</span>
+          <span className={`text-sm font-normal ${luxury ? 'text-luxury-ink-muted' : 'text-slate-500'}`}>
+            {' '}
+            {t('AUD / person', 'AUD / คน')}
+          </span>
         </p>
-        <p className="text-sm text-slate-600">
-          {t('Seats left', 'ที่นั่งเหลือ')}: <strong>{remaining}</strong>
+        <p className={`text-sm ${luxury ? 'text-luxury-ink-muted' : 'text-slate-600'}`}>
+          {t('Seats left', 'ที่นั่งเหลือ')}: <strong className={luxury ? 'text-luxury-ink' : ''}>{remaining}</strong>
         </p>
         {bookable ? (
           <Link
             href={`/trips/${trip.tour_code}`}
-            className="mt-2 inline-flex w-full justify-center rounded-full bg-navy px-4 py-2.5 text-sm font-semibold text-white hover:bg-navy-light"
+            className={`mt-2 inline-flex w-full cursor-pointer justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
+              luxury
+                ? 'bg-luxury-gold text-luxury-bg hover:bg-luxury-gold-bright'
+                : 'bg-navy text-white hover:bg-navy-light'
+            }`}
           >
             {t('View trip', 'ดูทริป')}
           </Link>
@@ -93,7 +112,9 @@ export default function TripCard({
           <button
             type="button"
             disabled
-            className="mt-2 w-full rounded-full bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500 cursor-not-allowed"
+            className={`mt-2 w-full cursor-not-allowed rounded-full px-4 py-2.5 text-sm font-semibold ${
+              luxury ? 'bg-luxury-surface text-luxury-ink-muted' : 'bg-slate-200 text-slate-500'
+            }`}
           >
             {reason === 'full'
               ? t('Full', 'เต็มแล้ว')
