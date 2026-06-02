@@ -8,6 +8,15 @@ const config: Config = {
         sans: ['var(--font-dm-sans)', 'var(--font-sarabun)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-fraunces)', 'var(--font-sarabun)', 'Georgia', 'serif'],
       },
+      keyframes: {
+        tripsFilterIn: {
+          '0%': { opacity: '0', transform: 'scale(0.97)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        tripsFilterIn: 'tripsFilterIn 150ms ease-out',
+      },
       colors: {
         navy: { DEFAULT: '#0d1b2a', light: '#1a3a5a', dark: '#080f17' },
         teal: { DEFAULT: '#4dd8a0', dark: '#0F6E56', light: '#E1F5EE' },

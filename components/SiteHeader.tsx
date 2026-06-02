@@ -6,7 +6,7 @@ import { useI18n } from '@/lib/i18n';
 import LangToggle from './LangToggle';
 
 const NAV = [
-  { href: '/#trips', en: 'Trips', th: 'ทริป' },
+  { href: '/trips', en: 'Trips', th: 'ทริป' },
   { href: '/gallery', en: 'Gallery', th: 'แกลเลอรี' },
   { href: '/reviews', en: 'Reviews', th: 'รีวิว' },
   { href: '/about', en: 'About', th: 'เกี่ยวกับ' },

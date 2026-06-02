@@ -8,26 +8,45 @@ import { seatsRemaining, tripBookable } from '@/lib/trips';
 import { useI18n } from '@/lib/i18n';
 import CoverImage from './CoverImage';
 
-export default function TripCard({ trip }: { trip: TripRow }) {
+type TripCardProps = {
+  trip: TripRow;
+  comingSoon?: boolean;
+  featuredLayout?: boolean;
+};
+
+export default function TripCard({
+  trip,
+  comingSoon = false,
+  featuredLayout = false,
+}: TripCardProps) {
   const { t, lang } = useI18n();
   const remaining = seatsRemaining(trip);
   const { bookable, reason } = tripBookable(trip);
   const title = tripDisplayTitle(trip, lang);
   const isFlagship = trip.tour_code === FLAGSHIP_TOUR_CODE || trip.featured;
+  const dimmed = comingSoon;
 
   return (
     <article
-      className={`group rounded-2xl overflow-hidden border bg-white shadow-sm hover:shadow-lg transition-shadow ${
-        isFlagship ? 'border-gold ring-1 ring-gold/40' : 'border-slate-200'
+      className={`rounded-2xl overflow-hidden border bg-white shadow-sm transition-shadow duration-150 ${
+        dimmed ? 'opacity-70' : 'group hover:shadow-lg'
+      } ${isFlagship ? 'border-gold ring-1 ring-gold/40' : 'border-slate-200'} ${
+        featuredLayout ? 'h-full' : ''
       }`}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div
+        className={`relative overflow-hidden ${
+          featuredLayout ? 'aspect-[16/10] md:aspect-[2/1]' : 'aspect-[4/3]'
+        }`}
+      >
         <CoverImage
           src={trip.cover_image}
           alt={title}
           tourCode={trip.tour_code}
           className="absolute inset-0 w-full h-full"
-          imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          imgClassName={`w-full h-full object-cover transition-transform duration-500 ${
+            dimmed ? '' : 'group-hover:scale-105'
+          }`}
         />
         {isFlagship && (
           <span className="absolute top-3 left-3 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-navy">
@@ -45,8 +64,14 @@ export default function TripCard({ trip }: { trip: TripRow }) {
           </span>
         )}
       </div>
-      <div className="p-5 space-y-2">
-        <h3 className="font-serif text-lg font-semibold text-navy">{title}</h3>
+      <div className={`space-y-2 ${featuredLayout ? 'p-6' : 'p-5'}`}>
+        <h3
+          className={`font-serif font-semibold text-navy ${
+            featuredLayout ? 'text-xl md:text-2xl' : 'text-lg'
+          }`}
+        >
+          {title}
+        </h3>
         <p className="text-sm text-slate-500">
           {trip.duration} · {trip.season}
         </p>
