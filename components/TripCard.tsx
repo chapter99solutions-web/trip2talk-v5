@@ -43,8 +43,8 @@ export default function TripCard({
       } ${featuredLayout ? 'h-full' : ''}`}
     >
       <div
-        className={`relative overflow-hidden ${
-          featuredLayout ? 'aspect-[16/10] md:aspect-[2/1]' : 'aspect-[4/3]'
+        className={`relative w-full overflow-hidden ${
+          featuredLayout ? 'aspect-[16/10] md:aspect-[2/1]' : 'h-[200px]'
         }`}
       >
         <CoverImage

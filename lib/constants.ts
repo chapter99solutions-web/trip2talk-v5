@@ -2,6 +2,10 @@ import { getStoragePublicBase } from './env';
 
 export const FLAGSHIP_TOUR_CODE = 'NZ-6D5N' as const;
 
+/** V5 media bucket (pcqx) — Tasmania 3D2N card cover */
+export const TAS_3D2N_COVER_IMAGE =
+  'https://pcqxewzzypwxfldxkcxp.supabase.co/storage/v1/object/public/Trip2Talk%20Photos/Photos/Melbourne/3.jpg';
+
 /** Original 8 — full detail + booking when a date is set in Supabase. */
 export const CORE_TOUR_CODES = [
   'TAS-3D2N',
@@ -91,6 +95,10 @@ export function normalizeCoverImageUrl(url: string | null | undefined): string |
   if (trimmed.startsWith('http')) {
     const pathMatch = trimmed.match(/\/object\/public\/portfolio\/(.+)$/i);
     if (pathMatch) return `${base}/${pathMatch[1]}`;
+    // Trip2Talk Photos on pcqx (videos + marketing stills) — do not rewrite to portfolio project
+    if (/pcqxewzzypwxfldxkcxp/i.test(trimmed) && /\/object\/public\/trip2talk\s*photos\//i.test(trimmed)) {
+      return trimmed;
+    }
     return trimmed.replace(/pcqxewzzypwxfldxkcxp\.supabase\.co/gi, 'niuibpznjvytprbrzvnn.supabase.co');
   }
   return portfolioImageUrl(trimmed);

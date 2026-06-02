@@ -1,5 +1,5 @@
 import type { TripRow } from './supabase';
-import { FLAGSHIP_TOUR_CODE, portfolioImageUrl } from './constants';
+import { FLAGSHIP_TOUR_CODE, TAS_3D2N_COVER_IMAGE, portfolioImageUrl } from './constants';
 
 /** Canonical seed — 8 core trips + 5 listing-only (coming soon, cards on homepage). */
 export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
@@ -11,7 +11,7 @@ export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
     price: 1350,
     max_seats: 6,
     seats_taken: 0,
-    cover_image: portfolioImageUrl('Tasmania/596873932_1428638042594626_8987722411601397177_n.jpg'),
+    cover_image: TAS_3D2N_COVER_IMAGE,
     description: 'Tasmania 3D2N private photo journey.',
     duration: '3D2N',
     season: 'All Year',
