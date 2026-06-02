@@ -16,7 +16,10 @@ export default function CompanionOnboardingPage() {
       router.replace('/companion/home');
       return;
     }
-    if (isCompanionConsentComplete(session.booking.booking_ref)) {
+    if (
+      session.booking &&
+      isCompanionConsentComplete(session.booking.booking_ref)
+    ) {
       router.replace('/companion/home');
     }
   }, [ready, session, router]);

@@ -6,5 +6,9 @@ import { useRequireCompanion } from '@/components/companion/CompanionProvider';
 export default function CompanionPreparePage() {
   const { session, ready } = useRequireCompanion();
   if (!ready || !session) return null;
-  return <PrepareView tourCode={session.trip.tour_code} />;
+  const code = session.trip?.tour_code ?? session.activeTourCode;
+  if (!code) {
+    return <p className="p-6 text-white/60 text-center">ไม่พบทริปสำหรับหน้านี้</p>;
+  }
+  return <PrepareView tourCode={code} />;
 }

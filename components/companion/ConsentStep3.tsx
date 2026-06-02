@@ -8,7 +8,7 @@ import {
 } from '@/lib/companion/consent-items';
 
 type Props = {
-  onSubmit: () => void;
+  onSubmit: (checked: Record<ConsentItemId, boolean>) => void;
   onBack?: () => void;
   submitting?: boolean;
 };
@@ -131,7 +131,7 @@ export default function ConsentStep3({ onSubmit, onBack, submitting = false }: P
         <button
           type="button"
           disabled={!allChecked || submitting}
-          onClick={onSubmit}
+          onClick={() => onSubmit(checked)}
           className="flex-[2] rounded-xl bg-companion-accent py-3 text-sm font-semibold text-companion-dark disabled:opacity-40"
         >
           {submitting ? 'กำลังบันทึก…' : 'ยืนยันและเข้าใช้งาน'}

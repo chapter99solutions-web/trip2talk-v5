@@ -36,7 +36,7 @@ export default function CompanionLoginPage() {
     }
     setSession({
       role: result.role,
-      bookingRef: result.booking.booking_ref,
+      bookingRef: result.booking?.booking_ref,
       booking: result.booking,
       trip: result.trip,
       savedAt: new Date().toISOString(),
@@ -56,9 +56,11 @@ export default function CompanionLoginPage() {
     }
     setSession({
       role: result.role,
-      bookingRef: result.booking.booking_ref,
+      staffRole: result.staffRole,
+      bookingRef: result.booking?.booking_ref,
       booking: result.booking,
       trip: result.trip,
+      activeTourCode: result.activeTourCode ?? result.trip?.tour_code,
       savedAt: new Date().toISOString(),
     });
     router.push(result.role === 'guest' ? '/companion/onboarding' : '/companion/home');
@@ -140,7 +142,7 @@ export default function CompanionLoginPage() {
               placeholder="ดูข้อมูลแขกจริง"
               className="w-full rounded-xl border border-slate-200 px-4 py-3 font-mono text-sm"
             />
-            <p className="text-xs text-slate-500">1111 Staff · 4444 Co-Host · 9999 Owner</p>
+            <p className="text-xs text-slate-500">1111 ช่างภาพ · 4444 พลอย · 9999 พี่แสน</p>
           </div>
           <button
             type="submit"
