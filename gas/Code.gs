@@ -202,6 +202,36 @@ function doPost(e) {
   }
 }
 
+/**
+ * Run once from Apps Script editor (trip2talk GAS project bound to spreadsheet):
+ * Trip info → row with Tour Code TAS-3D2N → Standard Price = 1350
+ */
+function fixTas3d2nStandardPrice() {
+  var sheet = getSpreadsheet_().getSheetByName(TRIPS_TAB);
+  if (!sheet) throw new Error('Sheet not found: ' + TRIPS_TAB);
+  var rows = sheet.getDataRange().getValues();
+  if (rows.length < 2) throw new Error('Trip info has no data rows');
+  var headers = rows[0];
+  var codeCol = -1;
+  var priceCol = -1;
+  for (var h = 0; h < headers.length; h++) {
+    var label = String(headers[h] || '').trim();
+    if (label === 'Tour Code') codeCol = h;
+    if (label === 'Standard Price') priceCol = h;
+  }
+  if (codeCol < 0 || priceCol < 0) {
+    throw new Error('Missing Tour Code or Standard Price column');
+  }
+  for (var i = 1; i < rows.length; i++) {
+    if (normalizeCode(rows[i][codeCol]) === 'TAS-3D2N') {
+      sheet.getRange(i + 1, priceCol + 1).setValue(1350);
+      Logger.log('TAS-3D2N Standard Price set to 1350 (row ' + (i + 1) + ')');
+      return;
+    }
+  }
+  throw new Error('TAS-3D2N row not found on Trip info');
+}
+
 function respond(data) {
   return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(
     ContentService.MimeType.JSON

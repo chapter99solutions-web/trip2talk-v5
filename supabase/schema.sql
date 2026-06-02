@@ -84,7 +84,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS bookings_one_active_per_email_tour
   WHERE (status IS DISTINCT FROM 'cancelled');
 
 INSERT INTO trips (tour_code, name, name_th, price, max_seats, duration, season, cover_image) VALUES
-('TAS-3D2N', 'Tasmania 3D2N', 'แทสเมเนีย 3 วัน 2 คืน', 1200, 6, '3D2N', 'All Year', 'Tasmania/596873932_1428638042594626_8987722411601397177_n.jpg'),
+('TAS-3D2N', 'Tasmania 3D2N', 'แทสเมเนีย 3 วัน 2 คืน', 1350, 6, '3D2N', 'All Year', 'Tasmania/596873932_1428638042594626_8987722411601397177_n.jpg'),
 ('MEL-4D3N', 'Melbourne 4D3N', 'เมลเบิร์น 4 วัน 3 คืน', 1350, 6, '4D3N', 'All Year', 'Melbourne/01.jpg'),
 ('ULU-4D3N', 'Red Desert Odyssey 4D3N', 'อูลูรู 4 วัน 3 คืน', 1690, 5, '4D3N', 'All Year', 'Uluru/1.jpg'),
 ('NZ-6D5N', 'New Zealand South Island 6D5N', 'นิวซีแลนด์ 6 วัน 5 คืน', 2350, 5, '6D5N', 'Spring', 'New Zealand/Spring/T2T-10.JPG'),

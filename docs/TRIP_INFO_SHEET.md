@@ -34,6 +34,18 @@ Live v5 GAS could not read the tab on the deployed `/exec` URL (`Sheet not found
 
 **v5 app field mapping:** `Standard Price` → price · `Season` → season · `Max Pax` → max seats (display) · `Duration Days` → duration · leave **Departure Start/End** empty for “Coming soon” · **do not** rely on Slots columns (seats live in Supabase only).
 
+## Price correction — TAS-3D2N
+
+| Column | Value |
+|--------|--------|
+| Tour Code | TAS-3D2N |
+| Standard Price | **1350** (Standard Rate 4–6 guests; was 1200) |
+
+On **Trip info**, find the row where **Tour Code** = `TAS-3D2N` and set **Standard Price** to `1350`.  
+Or run `fixTas3d2nStandardPrice()` once in the Apps Script editor (`gas/Code.gs`), then redeploy the web app.
+
+Also run `supabase/tas-3d2n-price-1350.sql` in Supabase if the `trips` table still has `1200`.
+
 ## Step 2 — Append these 5 rows (do not edit existing rows)
 
 Add **after** the last existing trip row. Copy each value into the matching column.

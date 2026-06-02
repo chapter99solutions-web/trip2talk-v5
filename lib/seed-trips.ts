@@ -8,7 +8,7 @@ export const SEED_TRIPS: Omit<TripRow, 'id' | 'created_at'>[] = [
     name: 'Tasmania 3D2N',
     name_th: 'แทสเมเนีย 3 วัน 2 คืน',
     date: null,
-    price: 1200,
+    price: 1350,
     max_seats: 6,
     seats_taken: 0,
     cover_image: portfolioImageUrl('Tasmania/596873932_1428638042594626_8987722411601397177_n.jpg'),
