@@ -36,6 +36,9 @@ export type GuestConsentRow = {
   has_medical_condition: boolean;
   medical_notes: string | null;
   consent_items?: Record<string, boolean> | null;
+  consent_rules?: boolean | null;
+  rules_acknowledged_at?: string | null;
+  updated_at?: string | null;
 };
 
 export type ExtendedBookingRow = BookingRow & {
