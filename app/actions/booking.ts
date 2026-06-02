@@ -1,17 +1,12 @@
 'use server';
 
-import {
-  checkBookingAllowed,
-  claimSeats,
-  createBooking,
-  generateBookingRef,
-  releaseSeats,
-} from '@/lib/bookings';
+import { claimSeats, createBooking, generateBookingRef, releaseSeats } from '@/lib/bookings';
 import { gasAddBooking } from '@/lib/gas-client';
+import { getSupabaseSafe } from '@/lib/supabase';
 
 export type SubmitBookingResult =
   | { ok: true; bookingRef: string }
-  | { ok: false; error: string; code?: 'already_booked' };
+  | { ok: false; error: string; code?: 'already_booked' | 'booking_check_failed' };
 
 export async function submitBooking(formData: FormData): Promise<SubmitBookingResult> {
   const tour_code = String(formData.get('tour_code') || '').trim().toUpperCase();
@@ -27,15 +22,33 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
     return { ok: false, error: 'Invalid seat count.' };
   }
 
-  const normalizedEmail = email.toLowerCase();
-  const allowed = await checkBookingAllowed(normalizedEmail, tour_code);
-  if (!allowed.ok) {
-    if (allowed.reason === 'already booked') {
-      return { ok: false, error: 'already booked', code: 'already_booked' };
-    }
-    return { ok: false, error: allowed.reason || 'Could not verify booking.' };
+  const sb = getSupabaseSafe();
+  if (!sb) {
+    return {
+      ok: false,
+      code: 'booking_check_failed',
+      error: 'ไม่สามารถทำการจองได้ กรุณาลองใหม่อีกครั้ง',
+    };
   }
 
+  const { data: allowCheck, error: checkError } = await sb.rpc('check_booking_allowed', {
+    p_email: email,
+    p_tour_code: tour_code,
+  });
+
+  if (checkError || !(allowCheck as { ok?: boolean } | null)?.ok) {
+    const reason = (allowCheck as { reason?: string } | null)?.reason;
+    const alreadyBooked = reason === 'already booked';
+    return {
+      ok: false,
+      code: alreadyBooked ? 'already_booked' : 'booking_check_failed',
+      error: alreadyBooked
+        ? 'อีเมลนี้จองทริปนี้ไว้แล้ว กรุณาตรวจสอบอีเมลของคุณ'
+        : 'ไม่สามารถทำการจองได้ กรุณาลองใหม่อีกครั้ง',
+    };
+  }
+
+  const normalizedEmail = email.toLowerCase();
   const claim = await claimSeats(tour_code, seats);
   if (!claim.ok) {
     return { ok: false, error: claim.reason || 'Could not reserve seats.' };
@@ -59,7 +72,11 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
     await releaseSeats(tour_code, seats);
     const msg = e instanceof Error ? e.message : 'Booking save failed.';
     if (/bookings_one_active_per_email_tour|duplicate key/i.test(msg)) {
-      return { ok: false, error: 'already booked', code: 'already_booked' };
+      return {
+        ok: false,
+        code: 'already_booked',
+        error: 'อีเมลนี้จองทริปนี้ไว้แล้ว กรุณาตรวจสอบอีเมลของคุณ',
+      };
     }
     return { ok: false, error: msg };
   }

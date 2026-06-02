@@ -40,12 +40,29 @@ function extractTourCodeFromRow(row: Record<string, unknown>): string | null {
   return null;
 }
 
+function durationFromSheet(row: Record<string, unknown>, seed: TripRow): string {
+  const raw = pickField(row, ['duration', 'Duration', 'Duration Days']);
+  if (raw == null || raw === '') return seed.duration;
+  const s = String(raw).trim();
+  if (/^\d+$/.test(s)) {
+    const n = Number(s);
+    if (n === 1) return '1DAY';
+    if (n === 2) return '2D1N';
+    if (n === 3) return '3D2N';
+    if (n === 4) return '4D3N';
+    if (n === 5) return '5D4N';
+    if (n === 6) return '6D5N';
+  }
+  return s || seed.duration;
+}
+
 function operationalFromGasRow(row: Record<string, unknown>, seed: TripRow): Partial<TripRow> {
-  const priceRaw = pickField(row, ['price', 'Price', 'price_aud', 'Price AUD']);
+  const priceRaw = pickField(row, ['price', 'Price', 'price_aud', 'Price AUD', 'Standard Price']);
   const price = priceRaw != null ? Number(priceRaw) : seed.price;
-  const max_seats = Number(pickField(row, ['max_seats', 'Max Seats', 'maxPax']) ?? seed.max_seats) || seed.max_seats;
+  const max_seats =
+    Number(pickField(row, ['max_seats', 'Max Seats', 'maxPax', 'Max Pax']) ?? seed.max_seats) || seed.max_seats;
   const seats_taken = Number(pickField(row, ['seats_taken', 'Seats Taken', 'booked']) ?? seed.seats_taken) || 0;
-  const duration = String(pickField(row, ['duration', 'Duration']) ?? seed.duration).trim() || seed.duration;
+  const duration = durationFromSheet(row, seed);
   const season = String(pickField(row, ['season', 'Season']) ?? seed.season ?? '').trim() || seed.season;
   const dateVal = pickField(row, ['date', 'Date', 'trip_date', 'Trip Date']);
   const date =

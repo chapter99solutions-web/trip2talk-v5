@@ -63,7 +63,7 @@ export default function HomePage({ trips, slides }: { trips: TripRow[]; slides: 
           {t('Our trips', 'ทริปของเรา')}
         </h2>
         <p className="text-center text-slate-500 mb-10 text-sm">
-          {t('Eight curated journeys — no filler packages.', 'แปดทริปคัดสรร — ไม่มีแพ็กเกจปลอม')}
+          {t('Curated journeys — no filler packages.', 'ทริปคัดสรร — ไม่มีแพ็กเกจปลอม')}
         </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {trips.map((trip) => (

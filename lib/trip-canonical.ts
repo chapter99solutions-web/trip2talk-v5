@@ -64,7 +64,7 @@ export function applyCanonicalTrip(tourCode: string, operational: Partial<TripRo
 
 /**
  * Final gate before any trip list hits the UI:
- * - exactly 8 allowed tour_codes
+ * - exactly the allowed tour_codes (core + listing-only)
  * - drops rows with rejected marketing titles (unless code maps to a real trip → canonical)
  */
 export function guardAllowedTrips(trips: TripRow[]): TripRow[] {

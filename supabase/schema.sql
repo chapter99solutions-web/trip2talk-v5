@@ -90,6 +90,6 @@ INSERT INTO trips (tour_code, name, name_th, price, max_seats, duration, season,
 ('NZ-6D5N', 'New Zealand South Island 6D5N', 'นิวซีแลนด์ 6 วัน 5 คืน', 2350, 5, '6D5N', 'Spring', 'New Zealand/Spring/T2T-10.JPG'),
 ('TAS-LH-4D3N', 'The Launceston Highland 4D3N', 'ลอนเซสตัน 4 วัน 3 คืน', 1350, 6, '4D3N', 'Winter', 'Tasmania/596371362_1428639202594510_8709278754225773992_n.jpg'),
 ('KIA-1DAY', 'Kiama 1 Day', 'เกียม่า 1 วัน', 290, 8, '1DAY', 'All Year', 'SYD/705320467_10242162489108855_3820285517745745334_n.jpg'),
-('CAN-2D1N', 'Canberra 2D1N', 'แคนเบอร์รา 2 วัน 1 คืน', 590, 6, '2D1N', 'All Year', 'Cowra/12 (1).jpg'),
+('CAN-2D1N', 'Cowra & Canowindra Canola Fields 2D1N', 'คาวราและทุ่งคานาล่าคาโนวินดรา 2 วัน 1 คืน', 380, 6, '2D1N', 'Spring Season Only (October)', 'Cowra/12 (1).jpg'),
 ('SYD-1DAY', 'Sydney 1 Day', 'ซิดนีย์ 1 วัน', 190, 10, '1DAY', 'All Year', 'SYDNEY/506861557_10236863821565478_6038697174671264606_n.jpg')
 ON CONFLICT (tour_code) DO NOTHING;

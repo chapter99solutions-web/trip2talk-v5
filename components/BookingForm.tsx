@@ -24,11 +24,7 @@ export default function BookingForm({ trip }: { trip: TripRow }) {
     const result = await submitBooking(fd);
     setLoading(false);
     if (!result.ok) {
-      setError(
-        result.code === 'already_booked'
-          ? t('This email has already booked this trip.', 'อีเมลนี้จองทริปนี้ไปแล้ว')
-          : result.error
-      );
+      setError(result.error);
       return;
     }
     router.push(

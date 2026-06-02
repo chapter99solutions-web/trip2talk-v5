@@ -2,7 +2,8 @@ import { getStoragePublicBase } from './env';
 
 export const FLAGSHIP_TOUR_CODE = 'NZ-6D5N' as const;
 
-export const REAL_TOUR_CODES = [
+/** Original 8 — full detail + booking when a date is set in Supabase. */
+export const CORE_TOUR_CODES = [
   'TAS-3D2N',
   'MEL-4D3N',
   'ULU-4D3N',
@@ -13,7 +14,24 @@ export const REAL_TOUR_CODES = [
   'SYD-1DAY',
 ] as const;
 
+/** New listings — homepage cards only until detail pages ship (no `/trips/[code]`). */
+export const LISTING_ONLY_TOUR_CODES = [
+  'PSP-1DAY',
+  'SYD-MW-WIN',
+  'LAV-ANB-1D',
+  'TAS-SU-4D3N',
+  'BER-3D2N',
+] as const;
+
+export const REAL_TOUR_CODES = [...CORE_TOUR_CODES, ...LISTING_ONLY_TOUR_CODES] as const;
+
 export type TourCode = (typeof REAL_TOUR_CODES)[number];
+export type CoreTourCode = (typeof CORE_TOUR_CODES)[number];
+export type ListingOnlyTourCode = (typeof LISTING_ONLY_TOUR_CODES)[number];
+
+export function isListingOnlyTourCode(code: string): code is ListingOnlyTourCode {
+  return (LISTING_ONLY_TOUR_CODES as readonly string[]).includes(code.toUpperCase());
+}
 
 export const DASHBOARD_PINS = {
   staff: '1111',
@@ -48,6 +66,11 @@ export const TRIP_COVER_GRADIENT: Record<TourCode, string> = {
   'KIA-1DAY': 'from-cyan-500 via-blue-600 to-teal-900',
   'CAN-2D1N': 'from-amber-500 via-yellow-600 to-orange-900',
   'SYD-1DAY': 'from-blue-500 via-sky-600 to-navy',
+  'PSP-1DAY': 'from-teal-500 via-cyan-600 to-blue-900',
+  'SYD-MW-WIN': 'from-indigo-900 via-purple-900 to-slate-950',
+  'LAV-ANB-1D': 'from-purple-400 via-violet-500 to-indigo-900',
+  'TAS-SU-4D3N': 'from-amber-400 via-orange-500 to-rose-900',
+  'BER-3D2N': 'from-emerald-500 via-teal-600 to-blue-900',
 };
 
 export function isRealTourCode(code: string): code is TourCode {

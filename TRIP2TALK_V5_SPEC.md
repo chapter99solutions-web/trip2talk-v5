@@ -2,9 +2,13 @@
 
 See [README.md](./README.md) for setup. This file mirrors the product spec.
 
-## Real tour codes (only these 8)
+## Tour codes
 
-`TAS-3D2N` · `MEL-4D3N` · `ULU-4D3N` · `NZ-6D5N` · `TAS-LH-4D3N` · `KIA-1DAY` · `CAN-2D1N` · `SYD-1DAY`
+**Core (8):** `TAS-3D2N` · `MEL-4D3N` · `ULU-4D3N` · `NZ-6D5N` · `TAS-LH-4D3N` · `KIA-1DAY` · `CAN-2D1N` · `SYD-1DAY`
+
+**Listing only (5, coming soon):** `PSP-1DAY` · `SYD-MW-WIN` · `LAV-ANB-1D` · `TAS-SU-4D3N` · `BER-3D2N`
+
+Sheet rows: [docs/TRIP_INFO_SHEET.md](./docs/TRIP_INFO_SHEET.md)
 
 ## Data
 

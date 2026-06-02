@@ -12,6 +12,11 @@ var ALLOWED_TOUR_CODES = {
   'KIA-1DAY': true,
   'CAN-2D1N': true,
   'SYD-1DAY': true,
+  'PSP-1DAY': true,
+  'SYD-MW-WIN': true,
+  'LAV-ANB-1D': true,
+  'TAS-SU-4D3N': true,
+  'BER-3D2N': true,
 };
 
 var REJECTED_NAME_SNIPPETS = [
